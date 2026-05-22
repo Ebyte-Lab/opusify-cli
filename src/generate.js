@@ -3,6 +3,7 @@ import path from 'path';
 import chalk from 'chalk';
 import tiged from 'tiged';
 import Handlebars from 'handlebars';
+import { execSync } from 'child_process';
 
 // Helper function to recursively find all files in a directory
 function getAllFiles(dirPath, arrayOfFiles = []) {
@@ -55,14 +56,11 @@ export async function generateProject(config) {
     const allFiles = getAllFiles(projectPath);
 
     for (const file of allFiles) {
-      // Only process text/code files (skip images, etc.)
       if (file.match(/\.(tsx|ts|json|md|html|css)$/)) {
         let content = fs.readFileSync(file, 'utf-8');
-        
-        // If the file contains a Handlebars tag like {{projectName}}
         if (content.includes('{{')) {
           const template = Handlebars.compile(content);
-          const result = template(config); // Inject our config object!
+          const result = template(config);
           fs.writeFileSync(file, result);
         }
       }
@@ -72,8 +70,33 @@ export async function generateProject(config) {
     // 4. Save the config blueprint
     const configFilePath = path.join(projectPath, 'opusify.config.json');
     fs.writeFileSync(configFilePath, JSON.stringify(config, null, 2));
+
+    // 5. AUTOMATION PHASE: Install Dependencies and Git
+    console.log(chalk.cyan('\n📦 Installing dependencies (this might take a minute)...'));
+    try {
+      execSync('npm install', { cwd: projectPath, stdio: 'inherit' });
+      console.log(chalk.green('✔ Dependencies installed successfully!'));
+
+      // Check if the user selected 'Yes' for Git Initialization
+      if (config.initGit) {
+        console.log(chalk.cyan('\n🐙 Initializing Git repository...'));
+        execSync('git init', { cwd: projectPath, stdio: 'ignore' });
+        execSync('git add .', { cwd: projectPath, stdio: 'ignore' });
+        execSync('git commit -m "feat: initial commit from Opusify CLI 🚀"', { cwd: projectPath, stdio: 'ignore' });
+        console.log(chalk.green('✔ Git initialized!'));
+      } else {
+        console.log(chalk.gray('\n⏭️ Skipping Git initialization.'));
+      }
+
+    } catch (automationError) {
+      console.log(chalk.yellow('\n⚠️ Note: Could not complete npm install or git setup automatically. You may need to do it manually.'));
+    }
     
+    // 6. Final Success Message
     console.log(chalk.magenta(`\n🎉 Project ${projectName} is ready!`));
+    console.log(chalk.white(`\nNext steps:`));
+    console.log(chalk.cyan(`  cd ${projectName}`));
+    console.log(chalk.cyan(`  npm run dev\n`));
 
   } catch (error) {
     console.log(chalk.red(`\n🚨 Generation failed.`));

@@ -50,7 +50,6 @@ async function runOpusifyWizard() {
       message: chalk.magenta.bold('What is your project name?'),
       default: 'my-opusify-app',
       validate: (input) => {
-        // Enforce npm naming rules: lowercase, numbers, and hyphens only
         if (!/^[a-z0-9-]+$/.test(input)) {
           return 'Please use only lowercase letters, numbers, and hyphens (e.g., my-awesome-app)';
         }
@@ -116,6 +115,13 @@ async function runOpusifyWizard() {
         if (!TEMPLATES[answers.template]) return false;
         return TEMPLATES[answers.template].sidebarOpts;
       }
+    },
+    // Step 7: Git Init Config (NEW)
+    {
+      type: 'confirm',
+      name: 'initGit',
+      message: chalk.cyan.bold('Initialize a new Git repository?'),
+      default: true
     }
   ]);
 
