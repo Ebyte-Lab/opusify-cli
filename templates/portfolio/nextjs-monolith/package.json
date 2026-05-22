@@ -1,1 +1,6 @@
-{ "name": "dummy-template", "version": "1.0.0" }
+{
+  "name": "{{projectName}}",
+  "version": "1.0.0",
+  "description": "A {{variant}} style {{template}} built with {{architecture}}.",
+  "author": "Opusify CLI"
+}
