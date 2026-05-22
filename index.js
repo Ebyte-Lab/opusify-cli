@@ -116,11 +116,18 @@ async function runOpusifyWizard() {
         return TEMPLATES[answers.template].sidebarOpts;
       }
     },
-    // Step 7: Git Init Config (NEW)
+    // Step 7: Git Init Config 
     {
       type: 'confirm',
       name: 'initGit',
       message: chalk.cyan.bold('Initialize a new Git repository?'),
+      default: true
+    },
+    // Step 8: Security Config (NEW)
+    {
+      type: 'confirm',
+      name: 'enableSecurity',
+      message: chalk.red.bold('Enable Enterprise Security Hardening (Zod env validation & CSP headers)?'),
       default: true
     }
   ]);

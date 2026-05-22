@@ -1,7 +1,7 @@
 {
-  "name": "{{projectName}}",
+  "name": "my-opusify-app-7271",
   "version": "1.0.0",
-  "description": "A {{variant}} style {{template}} built with {{architecture}}.",
+  "description": "A Minimal Dark style portfolio built with nextjs-monolith.",
   "dependencies": {
     "next": "14.2.3",
     "react": "^18.3.1",
