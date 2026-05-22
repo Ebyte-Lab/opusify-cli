@@ -8,25 +8,37 @@ export async function generateProject(config) {
   let projectName = config.projectName;
   let projectPath = path.join(process.cwd(), projectName);
 
-  // SAFETY FIX: If the folder exists, append a random number until it is unique
+  // Fallback for duplicate names
   while (fs.existsSync(projectPath)) {
-    console.log(chalk.yellow(`⚠️ Folder "${projectName}" already exists. Generating a unique name...`));
     const randomSuffix = Math.floor(Math.random() * 10000);
     projectName = `${config.projectName}-${randomSuffix}`;
     projectPath = path.join(process.cwd(), projectName);
   }
-
-  // Update the config object so the rest of the engine uses the new unique name!
   config.projectName = projectName;
 
-  // 2. Create the physical folder on your machine
+  // 1. Create the target project directory
   fs.mkdirSync(projectPath, { recursive: true });
   console.log(chalk.green(`✔ Created project directory: ./${projectName}`));
 
-  // 3. Save the config blueprint inside
+  // 2. Locate the Local Template Repository path
+  // This matches exactly how we structured our folders!
+  const localTemplatePath = path.join(process.cwd(), 'templates', config.template, config.architecture);
+
+  // 3. Copy the files if that template exists locally
+  if (fs.existsSync(localTemplatePath)) {
+    console.log(chalk.blue(`📥 Fetching files from local repository: ${localTemplatePath}`));
+    
+    // recursive: true ensures it copies all sub-folders and files inside the template
+    fs.cpSync(localTemplatePath, projectPath, { recursive: true });
+    
+    console.log(chalk.green('✔ Template files copied successfully!'));
+  } else {
+    console.log(chalk.yellow(`⚠️ Local template not found at ${localTemplatePath}. Skipping file copy.`));
+  }
+
+  // 4. Save the config blueprint inside
   const configFilePath = path.join(projectPath, 'opusify.config.json');
   fs.writeFileSync(configFilePath, JSON.stringify(config, null, 2));
   
-  console.log(chalk.green(`✔ Saved configuration blueprint to the new folder.`));
-  console.log(chalk.magenta('\nNext phase: Ready to fetch templates from GitHub!'));
+  console.log(chalk.magenta('\nGeneration phase complete!'));
 }

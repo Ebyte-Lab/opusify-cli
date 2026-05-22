@@ -1,0 +1,8 @@
+{
+  "projectName": "my-opusify-app",
+  "template": "portfolio",
+  "variant": "Minimal Dark",
+  "architecture": "nextjs-monolith",
+  "design": "Minimal Clean",
+  "navCount": 4
+}
