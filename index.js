@@ -1,5 +1,6 @@
 import inquirer from 'inquirer';
 import chalk from 'chalk';
+import { generateProject } from './src/generate.js';
 
 const TEMPLATES = {
   portfolio: {
@@ -42,7 +43,21 @@ async function runOpusifyWizard() {
   console.log(chalk.gray('  Generate production-ready apps with one command.\n'));
 
   const config = await inquirer.prompt([
-    // Changed to rawlist so it prints numbers
+    // NEW STEP: Project Name
+    {
+      type: 'input',
+      name: 'projectName',
+      message: chalk.magenta.bold('What is your project name?'),
+      default: 'my-opusify-app',
+      validate: (input) => {
+        // Enforce npm naming rules: lowercase, numbers, and hyphens only
+        if (!/^[a-z0-9-]+$/.test(input)) {
+          return 'Please use only lowercase letters, numbers, and hyphens (e.g., my-awesome-app)';
+        }
+        return true;
+      }
+    },
+    // Step 1: Template
     {
       type: 'rawlist',
       name: 'template',
@@ -55,6 +70,7 @@ async function runOpusifyWizard() {
         { name: 'Blog / Magazine', value: 'blog' }
       ]
     },
+    // Step 2: Variant
     {
       type: 'rawlist',
       name: 'variant',
@@ -64,6 +80,7 @@ async function runOpusifyWizard() {
         return TEMPLATES[answers.template].variants;
       }
     },
+    // Step 3: Architecture
     {
       type: 'rawlist',
       name: 'architecture',
@@ -74,12 +91,14 @@ async function runOpusifyWizard() {
         { name: 'Turborepo — Monorepo (Enterprise)', value: 'nextjs-turborepo' }
       ]
     },
+    // Step 4: Design System
     {
       type: 'rawlist',
       name: 'design',
       message: chalk.magenta.bold('Choose design system:'),
       choices: DESIGNS
     },
+    // Step 5: Navigation Config
     {
       type: 'number',
       name: 'navCount',
@@ -87,6 +106,7 @@ async function runOpusifyWizard() {
       default: 5,
       validate: (input) => input >= 3 && input <= 9 ? true : 'Please enter a number between 3 and 9'
     },
+    // Step 6: Sidebar Config
     {
       type: 'confirm',
       name: 'includeSidebar',
@@ -100,8 +120,9 @@ async function runOpusifyWizard() {
   ]);
 
   console.log('\n' + chalk.green('✔ Configuration collected successfully!'));
-  console.log(chalk.gray('Final Config Object:'));
-  console.log(config);
+  
+  // Hand off the config to the generation engine!
+  await generateProject(config);
 }
 
 runOpusifyWizard();
