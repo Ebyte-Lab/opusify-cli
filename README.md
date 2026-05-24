@@ -5,47 +5,18 @@
 
 ### 🗺️ Opusify Master Development Roadmap
 
-| Issue | Task / Title | Core Sub-Tasks | Required Before Starting | Phase |
-| --- | --- | --- | --- | --- |
-| **001** | **Make CLI Executable** | • Add `#!/usr/bin/env node` shebang.<br>
+| Issue | Task / Title               | Core Sub-Tasks                                                                                                                 | Required Before Starting   | Phase      |
+| ----- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | -------------------------- | ---------- |
+| 001   | Make CLI Executable        | • Add `#!/usr/bin/env node` shebang.<br><br>• Add `"bin"` to `package.json`.<br><br>• Test global `npm link` execution.        | None                       | CLI Config |
+| 002   | Core Documentation         | • Write `README.md` (installation, usage).<br><br>• Write `CONTRIBUTING.md` (Git rules).                                       | None                       | CLI Config |
+| 003   | CI/CD & Code Quality       | • Configure ESLint & Prettier.<br><br>• Set up Husky pre-commit hooks.<br><br>• Create GitHub Actions `.yml` workflow.         | ISSUE-001                  | CLI Config |
+| 004   | Enhance CLI UX             | • Implement `ora` terminal spinners.<br><br>• Catch `SIGINT` (Ctrl+C) gracefully.                                              | None                       | CLI Polish |
+| 005   | Base Portfolio Template    | • Init Next.js 14 App Router.<br><br>• Inject `{{projectName}}` & `{{design}}`.<br><br>• Build base UI components.             | None                       | Templates  |
+| 006   | Base E-Commerce Template   | • Init Next.js 14 App Router.<br><br>• Build dynamic `[slug]` routing.<br><br>• Configure Handlebars sidebar logic.            | None                       | Templates  |
+| 007   | Dynamic Tailwind Themes    | • Map CSS variables in `globals.css`.<br><br>• Configure `tailwind.config.ts`.<br><br>• Wire up Glassmorphism & Dark Terminal. | ISSUE-005, 006             | Templates  |
+| 008   | Security & Dependencies    | • Implement Zod `env.mjs` validation.<br><br>• Use Handlebars to conditionally import `framer-motion`/`lucide-react`.          | ISSUE-005, 006, 007        | Templates  |
+| 009   | Remaining Templates & Vite | • Build School, SaaS, and Blog structures.<br><br>• Build Vite + React SPA architecture.                                       | None (Can run in parallel) | Templates  |
 
-<br>• Add `"bin"` to `package.json`.<br>
-
-<br>• Test global `npm link` execution. | *None* | CLI Config |
-| **002** | **Core Documentation** | • Write `README.md` (installation, usage).<br>
-
-<br>• Write `CONTRIBUTING.md` (Git rules). | *None* | CLI Config |
-| **003** | **CI/CD & Code Quality** | • Configure ESLint & Prettier.<br>
-
-<br>• Set up Husky pre-commit hooks.<br>
-
-<br>• Create GitHub Actions `.yml` workflow. | **ISSUE-001** | CLI Config |
-| **004** | **Enhance CLI UX** | • Implement `ora` terminal spinners.<br>
-
-<br>• Catch `SIGINT` (Ctrl+C) gracefully. | *None* | CLI Polish |
-| **005** | **Base Portfolio Template** | • Init Next.js 14 App Router.<br>
-
-<br>• Inject `{{projectName}}` & `{{design}}`.<br>
-
-<br>• Build base UI components. | *None* | Templates |
-| **006** | **Base E-Commerce Template** | • Init Next.js 14 App Router.<br>
-
-<br>• Build dynamic `[slug]` routing.<br>
-
-<br>• Configure Handlebars sidebar logic. | *None* | Templates |
-| **007** | **Dynamic Tailwind Themes** | • Map CSS variables in `globals.css`.<br>
-
-<br>• Configure `tailwind.config.ts`.<br>
-
-<br>• Wire up Glassmorphism & Dark Terminal. | **ISSUE-005, 006** | Templates |
-| **008** | **Security & Dependencies** | • Implement Zod `env.mjs` validation.<br>
-
-<br>• Use Handlebars to conditionally import `framer-motion`/`lucide-react`. | **ISSUE-005, 006, 007** | Templates |
-| **009** | **Remaining Templates & Vite** | • Build School, SaaS, and Blog structures.<br>
-
-<br>• Build Vite + React SPA architecture. | *None* (Can run in parallel) | Templates |
-
----
 
 ### 📜 Ebyte Soft Lab Contributor Rules & Workflow
 
