@@ -4,5 +4,6 @@
   "variant": "Minimal Dark",
   "architecture": "nextjs-monolith",
   "design": "Minimal Clean",
-  "navCount": 4
+  "navCount": 4,
+  "initGit": false
 }
