@@ -105,16 +105,20 @@ export async function generateProject(config) {
     resolveDependencies(projectPath, config);
 
     // 6. AUTOMATION PHASE: Install Dependencies
-    const installSpinner = ora({
-      text: 'Installing dependencies (this might take a minute)...',
-      spinner: 'squareCorners',
-      color: 'yellow'
-    }).start();
-    try {
-      execSync('npm install', { cwd: projectPath, stdio: 'pipe' });
-      installSpinner.succeed('Dependencies installed successfully!');
-    } catch (installError) {
-      installSpinner.fail('Could not install dependencies. You may need to run npm install manually.');
+    if (config.noInstall) {
+      console.log(chalk.gray('\n⏭️  Skipping npm install (--no-install).'));
+    } else {
+      const installSpinner = ora({
+        text: 'Installing dependencies (this might take a minute)...',
+        spinner: 'squareCorners',
+        color: 'yellow'
+      }).start();
+      try {
+        execSync('npm install', { cwd: projectPath, stdio: 'pipe' });
+        installSpinner.succeed('Dependencies installed successfully!');
+      } catch (installError) {
+        installSpinner.fail('Could not install dependencies. You may need to run npm install manually.');
+      }
     }
 
     // 7. Git Initialization
