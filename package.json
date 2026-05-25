@@ -31,9 +31,7 @@
     "tiged": "^2.12.7"
   },
   "devDependencies": {
-    "@eslint/js": "^10.0.1",
     "eslint": "^8.57.1",
-    "globals": "^17.6.0",
     "husky": "^8.0.3",
     "prettier": "^3.8.3"
   }
