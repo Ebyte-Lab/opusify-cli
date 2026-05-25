@@ -101,7 +101,10 @@ export async function generateProject(config) {
     const configFilePath = path.join(projectPath, 'opusify.config.json');
     fs.writeFileSync(configFilePath, JSON.stringify(config, null, 2));
 
-    // 5. AUTOMATION PHASE: Install Dependencies
+    // 5. Resolve dynamic dependencies based on user choices
+    resolveDependencies(projectPath, config);
+
+    // 6. AUTOMATION PHASE: Install Dependencies
     const installSpinner = ora({
       text: 'Installing dependencies (this might take a minute)...',
       spinner: 'squareCorners',
