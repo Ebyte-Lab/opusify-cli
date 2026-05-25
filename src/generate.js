@@ -45,13 +45,21 @@ export async function generateProject(config) {
   try {
     if (fs.existsSync(localTemplatePath)) {
       // 🟢 DEVELOPMENT MODE: Local folder found
-      const spinner = ora('DEV MODE: Copying local template...').start();
+      const spinner = ora({
+        text: 'DEV MODE: Copying local template...',
+        spinner: 'squareCorners',
+        color: 'blue'
+      }).start();
       fs.cpSync(localTemplatePath, projectPath, { recursive: true });
       spinner.succeed(`Files copied to ./${projectName}`);
     } else {
       // 🔵 PRODUCTION MODE: Fetch from GitHub
       const repoURI = `Ebyte-Lab/opusify-templates/${config.template}/${config.architecture}`;
-      const spinner = ora(`Fetching template from GitHub (${repoURI})...`).start();
+      const spinner = ora({
+        text: `Fetching template from GitHub (${repoURI})...`,
+        spinner: 'squareCorners',
+        color: 'blue'
+      }).start();
 
       try {
         const emitter = tiged(repoURI, { disableCache: true, force: true });
@@ -64,7 +72,11 @@ export async function generateProject(config) {
     }
 
     // 3. TRANSFORM PHASE: Process Handlebars Tags
-    const compileSpinner = ora('Compiling template tags...').start();
+    const compileSpinner = ora({
+      text: 'Compiling template tags...',
+      spinner: 'squareCorners',
+      color: 'cyan'
+    }).start();
     const allFiles = getAllFiles(projectPath);
 
     for (const file of allFiles) {
@@ -84,7 +96,11 @@ export async function generateProject(config) {
     fs.writeFileSync(configFilePath, JSON.stringify(config, null, 2));
 
     // 5. AUTOMATION PHASE: Install Dependencies
-    const installSpinner = ora('Installing dependencies (this might take a minute)...').start();
+    const installSpinner = ora({
+      text: 'Installing dependencies (this might take a minute)...',
+      spinner: 'squareCorners',
+      color: 'yellow'
+    }).start();
     try {
       execSync('npm install', { cwd: projectPath, stdio: 'pipe' });
       installSpinner.succeed('Dependencies installed successfully!');
@@ -94,7 +110,11 @@ export async function generateProject(config) {
 
     // 6. Git Initialization
     if (config.initGit) {
-      const gitSpinner = ora('Initializing Git repository...').start();
+      const gitSpinner = ora({
+        text: 'Initializing Git repository...',
+        spinner: 'squareCorners',
+        color: 'magenta'
+      }).start();
       try {
         execSync('git init', { cwd: projectPath, stdio: 'ignore' });
         execSync('git add .', { cwd: projectPath, stdio: 'ignore' });
