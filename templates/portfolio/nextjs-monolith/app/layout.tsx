@@ -1,34 +1,32 @@
-import type { Metadata } from "next";
-import localFont from "next/font/local";
-import "./globals.css";
-
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
+import type { Metadata } from 'next';
+import './globals.css';
+import AnimationProvider from '../components/AnimationProvider';
+{{#if (eq design "Dark Terminal")}}
+import { Terminal } from 'lucide-react';
+{{/if}}
 
 export const metadata: Metadata = {
   title: '{{projectName}} - Portfolio',
-  description: 'A {{variant}} portfolio generated with Opusify.',
+  description: 'A {{variant}} portfolio built with Opusify CLI.',
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en" data-theme="{{design}}">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
+      <body>
+        {{#if (eq design "Dark Terminal")}}
+        <header className="border-b border-border bg-card px-6 py-3 flex items-center gap-2">
+          <Terminal className="w-5 h-5 text-primary" />
+          <span className="font-mono text-sm text-primary">{{projectName}}</span>
+        </header>
+        {{/if}}
+        <AnimationProvider>
+          {children}
+        </AnimationProvider>
       </body>
     </html>
   );
