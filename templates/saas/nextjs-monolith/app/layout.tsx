@@ -96,7 +96,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const useSidebar = '{{includeSidebar}}' === 'true';
+  const useSidebar = ('{{includeSidebar}}' as string) === 'true';
 
   return (
     <html lang="en" data-theme="{{design}}">
