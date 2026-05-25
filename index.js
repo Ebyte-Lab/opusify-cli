@@ -43,7 +43,9 @@ async function runOpusifyWizard() {
   console.log(chalk.blue(`  Welcome to ${chalk.magenta('Opusify')} — The Full-Stack Scaffold Engine v1.0.0`));
   console.log(chalk.gray('  Generate production-ready apps with one command.\n'));
 
-  const config = await inquirer.prompt([
+  let config;
+  try {
+    config = await inquirer.prompt([
     // NEW STEP: Project Name
     {
       type: 'input',
@@ -132,6 +134,13 @@ async function runOpusifyWizard() {
       default: true
     }
   ]);
+  } catch (error) {
+    if (error.name === 'ExitPromptError' || error.message?.includes('User force closed')) {
+      console.log(chalk.yellow('\nScaffold cancelled. Goodbye!'));
+      process.exit(0);
+    }
+    throw error;
+  }
 
   console.log('\n' + chalk.green('✔ Configuration collected successfully!'));
   
