@@ -8,7 +8,10 @@
     "opusify": "./index.js"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint index.js src",
+    "format": "prettier --write .",
+    "prepare": "husky install"
   },
   "repository": {
     "type": "git",
@@ -26,5 +29,10 @@
     "handlebars": "^4.7.9",
     "inquirer": "^13.4.3",
     "tiged": "^2.12.7"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.1",
+    "husky": "^8.0.3",
+    "prettier": "^3.6.2"
   }
 }
