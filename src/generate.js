@@ -1,11 +1,16 @@
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import chalk from 'chalk';
 import ora from 'ora';
 import tiged from 'tiged';
 import Handlebars from 'handlebars';
 import { execSync } from 'child_process';
 import { resolveDependencies } from './dependencies.js';
+
+// Setup __dirname for ES Modules to fix the local template path bug
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Register custom Handlebars helpers
 Handlebars.registerHelper('eq', function (a, b) {
@@ -29,6 +34,11 @@ function getAllFiles(dirPath, arrayOfFiles = []) {
 export async function generateProject(config) {
   console.log(chalk.cyan('\n⚙️  Starting the File Generation Engine...'));
 
+  // Inject token into environment for tiged to access private repos
+  if (config.token) {
+    process.env.GITHUB_TOKEN = config.token;
+  }
+
   let projectName = config.projectName;
   let projectPath = path.join(process.cwd(), projectName);
 
@@ -41,8 +51,10 @@ export async function generateProject(config) {
   config.projectName = projectName; // Update config with final name
 
   // 2. Check for Local vs GitHub
+  // FIX: Look in the CLI's installation directory, not the user's cwd
   const localTemplatePath = path.join(
-    process.cwd(),
+    __dirname,
+    '..', // Go up one level from 'src' to reach the root where 'templates' is
     'templates',
     config.template,
     config.architecture,
@@ -60,7 +72,9 @@ export async function generateProject(config) {
       spinner.succeed(`Files copied to ./${projectName}`);
     } else {
       // 🔵 PRODUCTION MODE: Fetch from GitHub
-      const repoURI = `Ebyte-Lab/opusify-templates/${config.template}/${config.architecture}`;
+      const targetRepo = config.repo || 'Ebyte-Lab/opusify-templates';
+      const repoURI = `${targetRepo}/${config.template}/${config.architecture}`;
+      
       const spinner = ora({
         text: `Fetching template from GitHub (${repoURI})...`,
         spinner: 'squareCorners',
@@ -72,7 +86,10 @@ export async function generateProject(config) {
         await emitter.clone(projectPath);
         spinner.succeed(`Files copied to ./${projectName}`);
       } catch (fetchError) {
-        spinner.fail('Failed to fetch template from GitHub.');
+        spinner.fail(`Failed to fetch template from GitHub: ${repoURI}`);
+        if (!config.token) {
+          console.log(chalk.yellow('\n⚠️  Hint: If this repository is private, you must provide a GitHub token using --token or set the OPUSIFY_GITHUB_TOKEN environment variable.'));
+        }
         throw fetchError;
       }
     }
@@ -143,7 +160,7 @@ export async function generateProject(config) {
       console.log(chalk.gray('\n⏭️  Skipping Git initialization.'));
     }
 
-    // 7. Final Success Message
+    // 8. Final Success Message
     console.log(chalk.magenta(`\n🎉 Project ${projectName} is ready!`));
     console.log(chalk.white('\nNext steps:'));
     console.log(chalk.cyan(`  cd ${projectName}`));

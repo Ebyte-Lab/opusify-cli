@@ -137,6 +137,8 @@ async function createAction(projectName, options) {
       initGit: options.git !== false,
       enableSecurity: defaults.enableSecurity,
       noInstall: options.install === false,
+      repo: options.repo || 'Ebyte-Lab/opusify-templates',
+      token: options.token || process.env.OPUSIFY_GITHUB_TOKEN || process.env.GITHUB_TOKEN,
     };
 
     console.log(chalk.green('✔ Using defaults (--yes mode)'));
@@ -285,6 +287,8 @@ async function createAction(projectName, options) {
     initGit: options.git === false ? false : (answers.initGit !== undefined ? answers.initGit : true),
     enableSecurity: answers.enableSecurity !== undefined ? answers.enableSecurity : true,
     noInstall: options.install === false,
+    repo: options.repo || 'Ebyte-Lab/opusify-templates',
+    token: options.token || process.env.OPUSIFY_GITHUB_TOKEN || process.env.GITHUB_TOKEN,
   };
 
   console.log('\n' + chalk.green('✔ Configuration collected successfully!'));
@@ -375,6 +379,8 @@ program
   .option('--sidebar', 'Include a sidebar layout')
   .option('--no-git', 'Skip Git initialization')
   .option('--no-install', 'Skip npm install')
+  .option('-r, --repo <repository>', 'Custom GitHub repository (e.g., "username/repo")')
+  .option('--token <token>', 'GitHub Personal Access Token for private repositories')
   .option('-y, --yes', 'Accept all defaults (non-interactive)')
   .action(createAction);
 
