@@ -1,6 +1,10 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import './globals.css';
+import AnimationProvider from '../components/AnimationProvider';
+{{#if (eq design "Dark Terminal")}}
+import { Terminal } from 'lucide-react';
+{{/if}}
 
 export const metadata: Metadata = {
   title: '{{projectName}} - Store',
@@ -18,7 +22,10 @@ function Navbar() {
   return (
     <header className="border-b border-border bg-card">
       <nav className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-        <Link href="/" className="text-xl font-bold text-primary">
+        <Link href="/" className="text-xl font-bold text-primary flex items-center gap-2">
+          {{#if (eq design "Dark Terminal")}}
+          <Terminal className="w-5 h-5" />
+          {{/if}}
           {{projectName}}
         </Link>
         <ul className="flex gap-6">
@@ -41,7 +48,10 @@ function Navbar() {
 function Sidebar() {
   return (
     <aside className="w-64 border-r border-border bg-card min-h-screen p-6">
-      <Link href="/" className="text-xl font-bold text-primary block mb-8">
+      <Link href="/" className="text-xl font-bold text-primary flex items-center gap-2 mb-8">
+        {{#if (eq design "Dark Terminal")}}
+        <Terminal className="w-5 h-5" />
+        {{/if}}
         {{projectName}}
       </Link>
       <nav>
@@ -75,12 +85,20 @@ export default function RootLayout({
         {useSidebar ? (
           <div className="flex">
             <Sidebar />
-            <main className="flex-1">{children}</main>
+            <main className="flex-1">
+              <AnimationProvider>
+                {children}
+              </AnimationProvider>
+            </main>
           </div>
         ) : (
           <>
             <Navbar />
-            <main>{children}</main>
+            <main>
+              <AnimationProvider>
+                {children}
+              </AnimationProvider>
+            </main>
           </>
         )}
       </body>
