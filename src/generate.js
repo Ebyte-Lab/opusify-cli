@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import chalk from 'chalk';
+import ora from 'ora';
 import tiged from 'tiged';
 import Handlebars from 'handlebars';
 import { execSync } from 'child_process';
@@ -20,7 +21,7 @@ function getAllFiles(dirPath, arrayOfFiles = []) {
 }
 
 export async function generateProject(config) {
-  console.log(chalk.cyan('\n⚙️ Starting the File Generation Engine...'));
+  console.log(chalk.cyan('\n⚙️  Starting the File Generation Engine...'));
 
   let projectName = config.projectName;
   let projectPath = path.join(process.cwd(), projectName);
@@ -34,25 +35,36 @@ export async function generateProject(config) {
   config.projectName = projectName; // Update config with final name
 
   // 2. Check for Local vs GitHub
-  const localTemplatePath = path.join(process.cwd(), 'templates', config.template, config.architecture);
-  
+  const localTemplatePath = path.join(
+    process.cwd(),
+    'templates',
+    config.template,
+    config.architecture,
+  );
+
   try {
     if (fs.existsSync(localTemplatePath)) {
       // 🟢 DEVELOPMENT MODE: Local folder found
-      console.log(chalk.blue(`📥 DEV MODE: Using local template from ${localTemplatePath}`));
+      const spinner = ora('DEV MODE: Copying local template...').start();
       fs.cpSync(localTemplatePath, projectPath, { recursive: true });
+      spinner.succeed(`Files copied to ./${projectName}`);
     } else {
       // 🔵 PRODUCTION MODE: Fetch from GitHub
       const repoURI = `Ebyte-Lab/opusify-templates/${config.template}/${config.architecture}`;
-      console.log(chalk.blue(`📥 PROD MODE: Fetching from GitHub (${repoURI})...`));
-      
-      const emitter = tiged(repoURI, { disableCache: true, force: true });
-      await emitter.clone(projectPath);
+      const spinner = ora(`Fetching template from GitHub (${repoURI})...`).start();
+
+      try {
+        const emitter = tiged(repoURI, { disableCache: true, force: true });
+        await emitter.clone(projectPath);
+        spinner.succeed(`Files copied to ./${projectName}`);
+      } catch (fetchError) {
+        spinner.fail('Failed to fetch template from GitHub.');
+        throw fetchError;
+      }
     }
-    console.log(chalk.green(`✔ Files copied to ./${projectName}`));
 
     // 3. TRANSFORM PHASE: Process Handlebars Tags
-    console.log(chalk.cyan('🪄 Compiling template tags...'));
+    const compileSpinner = ora('Compiling template tags...').start();
     const allFiles = getAllFiles(projectPath);
 
     for (const file of allFiles) {
@@ -65,41 +77,46 @@ export async function generateProject(config) {
         }
       }
     }
-    console.log(chalk.green('✔ Template customization complete!'));
+    compileSpinner.succeed('Template customization complete!');
 
     // 4. Save the config blueprint
     const configFilePath = path.join(projectPath, 'opusify.config.json');
     fs.writeFileSync(configFilePath, JSON.stringify(config, null, 2));
 
-    // 5. AUTOMATION PHASE: Install Dependencies and Git
-    console.log(chalk.cyan('\n📦 Installing dependencies (this might take a minute)...'));
+    // 5. AUTOMATION PHASE: Install Dependencies
+    const installSpinner = ora('Installing dependencies (this might take a minute)...').start();
     try {
-      execSync('npm install', { cwd: projectPath, stdio: 'inherit' });
-      console.log(chalk.green('✔ Dependencies installed successfully!'));
+      execSync('npm install', { cwd: projectPath, stdio: 'pipe' });
+      installSpinner.succeed('Dependencies installed successfully!');
+    } catch (installError) {
+      installSpinner.fail('Could not install dependencies. You may need to run npm install manually.');
+    }
 
-      // Check if the user selected 'Yes' for Git Initialization
-      if (config.initGit) {
-        console.log(chalk.cyan('\n🐙 Initializing Git repository...'));
+    // 6. Git Initialization
+    if (config.initGit) {
+      const gitSpinner = ora('Initializing Git repository...').start();
+      try {
         execSync('git init', { cwd: projectPath, stdio: 'ignore' });
         execSync('git add .', { cwd: projectPath, stdio: 'ignore' });
-        execSync('git commit -m "feat: initial commit from Opusify CLI 🚀"', { cwd: projectPath, stdio: 'ignore' });
-        console.log(chalk.green('✔ Git initialized!'));
-      } else {
-        console.log(chalk.gray('\n⏭️ Skipping Git initialization.'));
+        execSync('git commit -m "feat: initial commit from Opusify CLI 🚀"', {
+          cwd: projectPath,
+          stdio: 'ignore',
+        });
+        gitSpinner.succeed('Git initialized!');
+      } catch (gitError) {
+        gitSpinner.fail('Could not initialize Git. You may need to do it manually.');
       }
-
-    } catch (automationError) {
-      console.log(chalk.yellow('\n⚠️ Note: Could not complete npm install or git setup automatically. You may need to do it manually.'));
+    } else {
+      console.log(chalk.gray('\n⏭️  Skipping Git initialization.'));
     }
-    
-    // 6. Final Success Message
-    console.log(chalk.magenta(`\n🎉 Project ${projectName} is ready!`));
-    console.log(chalk.white(`\nNext steps:`));
-    console.log(chalk.cyan(`  cd ${projectName}`));
-    console.log(chalk.cyan(`  npm run dev\n`));
 
+    // 7. Final Success Message
+    console.log(chalk.magenta(`\n🎉 Project ${projectName} is ready!`));
+    console.log(chalk.white('\nNext steps:'));
+    console.log(chalk.cyan(`  cd ${projectName}`));
+    console.log(chalk.cyan('  npm run dev\n'));
   } catch (error) {
-    console.log(chalk.red(`\n🚨 Generation failed.`));
+    console.log(chalk.red('\n🚨 Generation failed.'));
     console.log(chalk.gray(error.message));
     if (fs.existsSync(projectPath)) fs.rmSync(projectPath, { recursive: true, force: true });
   }
