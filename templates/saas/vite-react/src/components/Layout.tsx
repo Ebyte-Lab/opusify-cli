@@ -73,7 +73,7 @@ function Sidebar() {
 }
 
 export default function Layout() {
-  const useSidebar = '{{includeSidebar}}' === 'true';
+  const useSidebar = ('{{includeSidebar}}' as string) === 'true';
 
   if (useSidebar) {
     return (
