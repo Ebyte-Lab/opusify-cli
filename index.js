@@ -291,6 +291,70 @@ async function createAction(projectName, options) {
   await generateProject(config);
 }
 
+// Architecture availability map
+const ARCHITECTURES = {
+  'nextjs-monolith': { label: 'Next.js 14 — App Router', available: ['portfolio', 'ecommerce', 'school', 'saas', 'blog'] },
+  'vite-react': { label: 'Vite + React 18 — SPA', available: ['saas'] },
+  'nextjs-turborepo': { label: 'Turborepo — Monorepo', available: [] },
+};
+
+function listAction(options) {
+  console.log('');
+  console.log(chalk.blue.bold('  Opusify — Available Templates'));
+  console.log(chalk.gray('  ─────────────────────────────────────────────────────────────'));
+  console.log('');
+
+  if (options.template && !TEMPLATES[options.template]) {
+    console.log(chalk.red(`  ✖ Unknown template: "${options.template}"`));
+    console.log(chalk.gray(`    Valid options: ${VALID_TEMPLATES.join(', ')}`));
+    process.exit(1);
+  }
+
+  const templatesToShow = options.template
+    ? { [options.template]: TEMPLATES[options.template] }
+    : TEMPLATES;
+
+  for (const [key, tmpl] of Object.entries(templatesToShow)) {
+    console.log(chalk.white.bold(`  ${tmpl.label}`) + chalk.gray(` (${key})`));
+    console.log('');
+
+    // Variants
+    console.log(chalk.cyan('    Variants:'));
+    for (const variant of tmpl.variants) {
+      console.log(chalk.white(`      • ${variant}`));
+    }
+    console.log('');
+
+    // Architectures
+    console.log(chalk.cyan('    Architectures:'));
+    for (const [archKey, arch] of Object.entries(ARCHITECTURES)) {
+      const isAvailable = arch.available.includes(key);
+      if (isAvailable) {
+        console.log(chalk.green(`      ✔ ${arch.label}`) + chalk.gray(` (${archKey})`));
+      } else {
+        console.log(chalk.gray(`      ○ ${arch.label} — coming soon`));
+      }
+    }
+    console.log('');
+
+    // Sidebar support
+    console.log(chalk.cyan('    Sidebar:') + (tmpl.sidebarOpts ? chalk.green(' supported') : chalk.gray(' not applicable')));
+    console.log('');
+    console.log(chalk.gray('  ─────────────────────────────────────────────────────────────'));
+    console.log('');
+  }
+
+  // Design systems (show once at the bottom)
+  if (!options.template) {
+    console.log(chalk.blue.bold('  Design Systems'));
+    console.log('');
+    for (const design of DESIGNS) {
+      console.log(chalk.white(`    • ${design}`));
+    }
+    console.log('');
+  }
+}
+
 // CLI setup
 const program = new Command();
 
@@ -314,16 +378,10 @@ program
   .option('-y, --yes', 'Accept all defaults (non-interactive)')
   .action(createAction);
 
-// Default command — if user just runs `opusify` without subcommand
 program
-  .argument('[project-name]', '', '')
-  .action((projectName) => {
-    if (projectName) {
-      // If they run `opusify my-app`, treat it as `opusify create my-app`
-      createAction(projectName, {});
-    } else {
-      program.help();
-    }
-  });
+  .command('list')
+  .description('Show available templates, variants, and architectures')
+  .option('-t, --template <template>', 'Show details for a specific template')
+  .action(listAction);
 
 program.parse();
