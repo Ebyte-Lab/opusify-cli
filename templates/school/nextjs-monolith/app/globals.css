@@ -1,0 +1,59 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ===== Base Theme: Minimal Clean (Default) ===== */
+:root {
+  --bg-color: #ffffff;
+  --bg-secondary: #f9fafb;
+  --text-color: #111827;
+  --text-secondary: #6b7280;
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --border-color: #e5e7eb;
+  --card-bg: #ffffff;
+  --font-family: 'Inter', system-ui, sans-serif;
+  --radius: 0.5rem;
+}
+
+/* ===== Glassmorphism Theme ===== */
+[data-theme="Glassmorphism"] {
+  --bg-color: #0f172a;
+  --bg-secondary: rgba(255, 255, 255, 0.05);
+  --text-color: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --primary: #8b5cf6;
+  --primary-hover: #7c3aed;
+  --border-color: rgba(255, 255, 255, 0.1);
+  --card-bg: rgba(255, 255, 255, 0.08);
+  --font-family: 'Inter', system-ui, sans-serif;
+  --radius: 1rem;
+}
+
+[data-theme="Glassmorphism"] .glass {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* ===== Dark Terminal Theme ===== */
+[data-theme="Dark Terminal"] {
+  --bg-color: #000000;
+  --bg-secondary: #0a0a0a;
+  --text-color: #3fb950;
+  --text-secondary: #8b949e;
+  --primary: #3fb950;
+  --primary-hover: #2ea043;
+  --border-color: #21262d;
+  --card-bg: #0d1117;
+  --font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  --radius: 0.25rem;
+}
+
+/* ===== Apply variables globally ===== */
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-family: var(--font-family);
+}
