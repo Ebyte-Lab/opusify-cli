@@ -9,6 +9,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "test:templates": "node scripts/test-templates.js",
+    "test:templates:quick": "node scripts/test-templates.js --quick",
     "lint": "eslint index.js src/",
     "format": "prettier --write .",
     "prepare": "husky install"

@@ -6,6 +6,7 @@ import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { generateProject } from './src/generate.js';
+import { addAction } from './src/commands/add.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -389,5 +390,11 @@ program
   .description('Show available templates, variants, and architectures')
   .option('-t, --template <template>', 'Show details for a specific template')
   .action(listAction);
+
+program
+  .command('add')
+  .description('Add a feature plugin to an existing Opusify project')
+  .argument('<plugin>', 'Plugin to add (auth, dark-mode, analytics)')
+  .action(addAction);
 
 program.parse();
