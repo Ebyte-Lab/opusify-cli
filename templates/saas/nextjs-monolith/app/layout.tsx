@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import './globals.css';
+import { navLinks } from '../lib/nav';
 import AnimationProvider from '../components/AnimationProvider';
 {{#if (eq design "Dark Terminal")}}
 import { Terminal } from 'lucide-react';
@@ -10,14 +11,6 @@ export const metadata: Metadata = {
   title: '{{projectName}} - Dashboard',
   description: 'A {{variant}} SaaS dashboard built with Opusify CLI.',
 };
-
-const navLinks = [
-  { label: 'Dashboard', href: '/' },
-  { label: 'Analytics', href: '/analytics' },
-  { label: 'Users', href: '/users' },
-  { label: 'Billing', href: '/billing' },
-  { label: 'Settings', href: '/settings' },
-];
 
 function Navbar() {
   return (
@@ -41,10 +34,8 @@ function Navbar() {
             </li>
           ))}
         </ul>
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white text-sm font-medium">
-            A
-          </div>
+        <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white text-sm font-medium">
+          A
         </div>
       </nav>
     </header>

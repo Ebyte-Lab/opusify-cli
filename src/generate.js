@@ -7,6 +7,7 @@ import tiged from 'tiged';
 import Handlebars from 'handlebars';
 import { execSync } from 'child_process';
 import { resolveDependencies } from './dependencies.js';
+import { generateNavigation } from './navigation.js';
 
 // Setup __dirname for ES Modules to fix the local template path bug
 const __filename = fileURLToPath(import.meta.url);
@@ -129,7 +130,10 @@ export async function generateProject(config) {
     const configFilePath = path.join(projectPath, 'opusify.config.json');
     fs.writeFileSync(configFilePath, JSON.stringify(config, null, 2));
 
-    // 5. Resolve dynamic dependencies based on user choices
+    // 5. Generate dynamic navigation based on navCount
+    generateNavigation(projectPath, config);
+
+    // 6. Resolve dynamic dependencies based on user choices
     resolveDependencies(projectPath, config);
 
     // 6. AUTOMATION PHASE: Install Dependencies

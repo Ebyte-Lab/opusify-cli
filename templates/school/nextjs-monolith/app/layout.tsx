@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import './globals.css';
+import { navLinks } from '../lib/nav';
 import AnimationProvider from '../components/AnimationProvider';
 {{#if (eq design "Dark Terminal")}}
 import { Terminal } from 'lucide-react';
@@ -10,15 +11,6 @@ export const metadata: Metadata = {
   title: '{{projectName}} - School Management',
   description: 'A {{variant}} school management system built with Opusify CLI.',
 };
-
-const navLinks = [
-  { label: 'Dashboard', href: '/' },
-  { label: 'Students', href: '/students' },
-  { label: 'Courses', href: '/courses' },
-  { label: 'Grades', href: '/grades' },
-  { label: 'Attendance', href: '/attendance' },
-  { label: 'Schedule', href: '/schedule' },
-];
 
 function Navbar() {
   return (
