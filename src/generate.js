@@ -87,10 +87,21 @@ export async function generateProject(config) {
         spinner.succeed(`Files copied to ./${projectName}`);
       } catch (fetchError) {
         spinner.fail(`Failed to fetch template from GitHub: ${repoURI}`);
-        if (!config.token) {
-          console.log(chalk.yellow('\n⚠️  Hint: If this repository is private, you must provide a GitHub token using --token or set the OPUSIFY_GITHUB_TOKEN environment variable.'));
+        
+        // SPECIFIC NETWORK & GITHUB ERROR HANDLING
+        const errStr = fetchError.toString().toLowerCase();
+        if (errStr.includes('could not resolve') || errStr.includes('econnrefused') || errStr.includes('offline') || errStr.includes('network')) {
+          console.log(chalk.red('  ✖ Error: Could not reach GitHub. Check your internet connection.'));
+          console.log(chalk.gray('  Suggested fix: Ensure you are connected to the internet and try again.'));
+        } else if (errStr.includes('could not find commit hash') || errStr.includes('404')) {
+          console.log(chalk.red('  ✖ Error: The specified template or repository does not exist.'));
+          if (!config.token) {
+            console.log(chalk.yellow('  ⚠️  Hint: If this repository is private, you must provide a GitHub token using --token or set the OPUSIFY_GITHUB_TOKEN environment variable.'));
+          }
+        } else {
+          console.log(chalk.red(`  ✖ Error details: ${fetchError.message}`));
         }
-        throw fetchError;
+        throw new Error('FETCH_FAILED');
       }
     }
 
@@ -125,6 +136,15 @@ export async function generateProject(config) {
     if (config.noInstall) {
       console.log(chalk.gray('\n⏭️  Skipping npm install (--no-install).'));
     } else {
+      
+      // CHECK FOR EXISTING NODE_MODULES
+      const nodeModulesPath = path.join(projectPath, 'node_modules');
+      if (fs.existsSync(nodeModulesPath)) {
+        console.log(chalk.yellow('\n⚠️  WARNING: A node_modules directory already exists in the target directory.'));
+        console.log(chalk.gray('    This can happen if you are testing locally and left it inside your template folder.'));
+        console.log(chalk.gray('    Suggested fix: Delete node_modules from your template source to avoid copy bloat.'));
+      }
+
       const installSpinner = ora({
         text: 'Installing dependencies (this might take a minute)...',
         spinner: 'squareCorners',
@@ -134,7 +154,9 @@ export async function generateProject(config) {
         execSync('npm install', { cwd: projectPath, stdio: 'pipe' });
         installSpinner.succeed('Dependencies installed successfully!');
       } catch (installError) {
-        installSpinner.fail('Could not install dependencies. You may need to run npm install manually.');
+        installSpinner.fail('Could not install dependencies.');
+        console.log(chalk.red(`  ✖ NPM Error: ${installError.message}`));
+        console.log(chalk.gray('  Suggested fix: Run "npm install" manually inside the project folder to see detailed errors.'));
       }
     }
 
@@ -154,7 +176,8 @@ export async function generateProject(config) {
         });
         gitSpinner.succeed('Git initialized!');
       } catch (gitError) {
-        gitSpinner.fail('Could not initialize Git. You may need to do it manually.');
+        gitSpinner.fail('Could not initialize Git.');
+        console.log(chalk.gray('  Suggested fix: Ensure git is installed on your system or run "git init" manually.'));
       }
     } else {
       console.log(chalk.gray('\n⏭️  Skipping Git initialization.'));
@@ -167,7 +190,28 @@ export async function generateProject(config) {
     console.log(chalk.cyan('  npm run dev\n'));
   } catch (error) {
     console.log(chalk.red('\n🚨 Generation failed.'));
-    console.log(chalk.gray(error.message));
-    if (fs.existsSync(projectPath)) fs.rmSync(projectPath, { recursive: true, force: true });
+    
+    // Detailed System Error Classification
+    if (error.code === 'ENOSPC') {
+      console.log(chalk.red('  ✖ Error: Not enough disk space.'));
+      console.log(chalk.gray('  Suggested fix: Free up some space on your hard drive and try again.'));
+    } else if (error.code === 'EACCES' || error.code === 'EPERM') {
+      console.log(chalk.red('  ✖ Error: Permission denied.'));
+      console.log(chalk.gray('  Suggested fix: Check your folder permissions or run your terminal as an administrator/sudo.'));
+    } else if (error.message !== 'FETCH_FAILED') {
+      // Print generic errors if it's not one we already handled above
+      console.log(chalk.gray(`  Details: ${error.message}`));
+    }
+
+    // AUTOMATED CLEANUP
+    if (fs.existsSync(projectPath)) {
+      console.log(chalk.yellow(`\n🧹 Cleaning up partial project directory: ./${projectName}...`));
+      try {
+        fs.rmSync(projectPath, { recursive: true, force: true });
+        console.log(chalk.green('  ✔ Cleanup complete.'));
+      } catch (cleanupError) {
+        console.log(chalk.red(`  ✖ Failed to clean up directory. You may need to delete ./${projectName} manually.`));
+      }
+    }
   }
 }

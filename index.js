@@ -74,6 +74,13 @@ function printBanner() {
 async function createAction(projectName, options) {
   printBanner();
 
+  // 1. Validate project name if provided as an argument
+  if (projectName && !/^[a-z0-9-]+$/.test(projectName)) {
+    console.log(chalk.red(`\n✖ Invalid project name: "${projectName}"`));
+    console.log(chalk.gray('  Suggested fix: Please use only lowercase letters, numbers, and hyphens (e.g., my-awesome-app).'));
+    process.exit(1);
+  }
+
   // Validate flags early
   if (options.template && !VALID_TEMPLATES.includes(options.template)) {
     console.log(chalk.red(`\n✖ Invalid template: "${options.template}"`));
@@ -291,6 +298,28 @@ async function createAction(projectName, options) {
     repo: options.repo || 'Ebyte-Lab/opusify-templates',
     token: options.token || process.env.OPUSIFY_GITHUB_TOKEN || process.env.GITHUB_TOKEN,
   };
+
+  // 2. Warn if selecting Vite SPA for E-Commerce (SEO concern)
+  if (config.template === 'ecommerce' && config.architecture.includes('vite')) {
+    console.log(chalk.yellow('\n⚠️  WARNING: You selected Vite SPA for an E-Commerce template.'));
+    console.log(chalk.gray('    Vite generates a purely Client-Side application (No SSR).'));
+    console.log(chalk.gray('    This severely impacts SEO, which is crucial for E-Commerce stores.'));
+    console.log(chalk.gray('    Suggested fix: We highly recommend using Next.js App Router instead.'));
+    
+    // If not in --yes mode, ask for confirmation
+    if (!options.yes) {
+      const { proceed } = await inquirer.prompt([{
+        type: 'confirm',
+        name: 'proceed',
+        message: chalk.yellow('Do you still want to proceed with Vite?'),
+        default: false
+      }]);
+      if (!proceed) {
+        console.log(chalk.yellow('\nScaffold cancelled. Please run the command again.'));
+        process.exit(0);
+      }
+    }
+  }
 
   console.log('\n' + chalk.green('✔ Configuration collected successfully!'));
   await generateProject(config);
