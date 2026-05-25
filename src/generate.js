@@ -5,6 +5,12 @@ import ora from 'ora';
 import tiged from 'tiged';
 import Handlebars from 'handlebars';
 import { execSync } from 'child_process';
+import { resolveDependencies } from './dependencies.js';
+
+// Register custom Handlebars helpers
+Handlebars.registerHelper('eq', function (a, b) {
+  return a === b;
+});
 
 // Helper function to recursively find all files in a directory
 function getAllFiles(dirPath, arrayOfFiles = []) {
@@ -80,7 +86,7 @@ export async function generateProject(config) {
     const allFiles = getAllFiles(projectPath);
 
     for (const file of allFiles) {
-      if (file.match(/\.(tsx|ts|json|md|html|css)$/)) {
+      if (file.match(/\.(tsx|ts|json|md|html|css|mjs)$/)) {
         let content = fs.readFileSync(file, 'utf-8');
         if (content.includes('{{')) {
           const template = Handlebars.compile(content);
@@ -108,7 +114,7 @@ export async function generateProject(config) {
       installSpinner.fail('Could not install dependencies. You may need to run npm install manually.');
     }
 
-    // 6. Git Initialization
+    // 7. Git Initialization
     if (config.initGit) {
       const gitSpinner = ora({
         text: 'Initializing Git repository...',
