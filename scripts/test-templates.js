@@ -19,8 +19,8 @@ const DESIGNS = ['Minimal Clean', 'Dark Terminal', 'Glassmorphism'];
 
 // Template → available architectures
 const ARCHITECTURES = {
-  portfolio: ['nextjs-monolith'],
-  ecommerce: ['nextjs-monolith'],
+  portfolio: ['nextjs-monolith', 'vite-react'],
+  ecommerce: ['nextjs-monolith', 'vite-react'],
   school: ['nextjs-monolith'],
   saas: ['nextjs-monolith', 'vite-react'],
   blog: ['nextjs-monolith'],
