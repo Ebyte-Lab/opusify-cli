@@ -1,12 +1,18 @@
 {
   "name": "opusify-cli",
   "version": "1.0.0",
-  "description": "",
+  "description": "The Full-Stack Scaffold Engine — Generate production-ready Next.js and Vite applications with one command.",
   "main": "index.js",
   "type": "module",
   "bin": {
     "opusify": "./index.js"
   },
+  "files": [
+    "index.js",
+    "src/",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "test:templates": "node scripts/test-templates.js",
@@ -19,13 +25,29 @@
     "type": "git",
     "url": "git+https://github.com/Ebyte-Lab/opusify-cli.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "cli",
+    "scaffold",
+    "generator",
+    "nextjs",
+    "react",
+    "vite",
+    "tailwindcss",
+    "typescript",
+    "boilerplate",
+    "template",
+    "fullstack",
+    "opusify"
+  ],
+  "author": "Ebyte Soft Lab <https://github.com/Ebyte-Lab>",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/Ebyte-Lab/opusify-cli/issues"
   },
   "homepage": "https://github.com/Ebyte-Lab/opusify-cli#readme",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "dependencies": {
     "chalk": "^5.6.2",
     "commander": "^14.0.3",
