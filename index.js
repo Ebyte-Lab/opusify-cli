@@ -145,6 +145,7 @@ async function createAction(projectName, options) {
       initGit: options.git !== false,
       enableSecurity: defaults.enableSecurity,
       noInstall: options.install === false,
+      verbose: options.verbose || false,
       repo: options.repo || 'Ebyte-Lab/opusify-templates',
       token: options.token || process.env.OPUSIFY_GITHUB_TOKEN || process.env.GITHUB_TOKEN,
     };
@@ -295,6 +296,7 @@ async function createAction(projectName, options) {
     initGit: options.git === false ? false : (answers.initGit !== undefined ? answers.initGit : true),
     enableSecurity: answers.enableSecurity !== undefined ? answers.enableSecurity : true,
     noInstall: options.install === false,
+    verbose: options.verbose || false,
     repo: options.repo || 'Ebyte-Lab/opusify-templates',
     token: options.token || process.env.OPUSIFY_GITHUB_TOKEN || process.env.GITHUB_TOKEN,
   };
@@ -412,6 +414,7 @@ program
   .option('-r, --repo <repository>', 'Custom GitHub repository (e.g., "username/repo")')
   .option('--token <token>', 'GitHub Personal Access Token for private repositories')
   .option('-y, --yes', 'Accept all defaults (non-interactive)')
+  .option('--verbose', 'Show detailed output during generation')
   .action(createAction);
 
 program
