@@ -27,6 +27,8 @@ export function resolveDependencies(projectPath, config) {
     pkg.dependencies['tailwind-merge'] = '^2.3.0';
   } else if (config.design === 'Dark Terminal') {
     pkg.dependencies['lucide-react'] = '^0.378.0'; // For terminal icons
+  } else if (config.design === 'Neon Cyberpunk') {
+    pkg.dependencies['framer-motion'] = '^11.2.0'; // For glow/hover animations
   }
 
   // 3. Inject routing tools based on Sidebar choice
