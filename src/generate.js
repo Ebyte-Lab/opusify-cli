@@ -66,7 +66,7 @@ export async function generateProject(config) {
       // 🟢 DEVELOPMENT MODE: Local folder found
       const spinner = ora({
         text: 'DEV MODE: Copying local template...',
-        spinner: 'squareCorners',
+        spinner: 'dots',
         color: 'blue'
       }).start();
       fs.cpSync(localTemplatePath, projectPath, { recursive: true });
@@ -78,7 +78,7 @@ export async function generateProject(config) {
       
       const spinner = ora({
         text: `Fetching template from GitHub (${repoURI})...`,
-        spinner: 'squareCorners',
+        spinner: 'dots',
         color: 'blue'
       }).start();
 
@@ -109,7 +109,7 @@ export async function generateProject(config) {
     // 3. TRANSFORM PHASE: Process Handlebars Tags
     const compileSpinner = ora({
       text: 'Compiling template tags...',
-      spinner: 'squareCorners',
+      spinner: 'dots',
       color: 'cyan'
     }).start();
     const allFiles = getAllFiles(projectPath);
@@ -151,7 +151,7 @@ export async function generateProject(config) {
 
       const installSpinner = ora({
         text: 'Installing dependencies (this might take a minute)...',
-        spinner: 'squareCorners',
+        spinner: 'dots',
         color: 'yellow'
       }).start();
       try {
@@ -168,7 +168,7 @@ export async function generateProject(config) {
     if (config.initGit) {
       const gitSpinner = ora({
         text: 'Initializing Git repository...',
-        spinner: 'squareCorners',
+        spinner: 'dots',
         color: 'magenta'
       }).start();
       try {
