@@ -328,7 +328,7 @@ async function createAction(projectName, options) {
 // Architecture availability map
 const ARCHITECTURES = {
   'nextjs-monolith': { label: 'Next.js 14 — App Router', available: ['portfolio', 'ecommerce', 'school', 'saas', 'blog'] },
-  'vite-react': { label: 'Vite + React 18 — SPA', available: ['saas'] },
+  'vite-react': { label: 'Vite + React 18 — SPA', available: ['portfolio', 'ecommerce', 'saas'] },
   'nextjs-turborepo': { label: 'Turborepo — Monorepo', available: [] },
 };
 

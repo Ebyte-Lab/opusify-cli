@@ -21,8 +21,8 @@ if (!template) {
 const DESIGNS = ['Minimal Clean', 'Dark Terminal', 'Glassmorphism'];
 
 const ARCHITECTURES = {
-  portfolio: ['nextjs-monolith'],
-  ecommerce: ['nextjs-monolith'],
+  portfolio: ['nextjs-monolith', 'vite-react'],
+  ecommerce: ['nextjs-monolith', 'vite-react'],
   school: ['nextjs-monolith'],
   saas: ['nextjs-monolith', 'vite-react'],
   blog: ['nextjs-monolith'],
