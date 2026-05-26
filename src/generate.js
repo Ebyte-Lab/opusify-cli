@@ -33,7 +33,16 @@ function getAllFiles(dirPath, arrayOfFiles = []) {
 }
 
 export async function generateProject(config) {
+  const verbose = config.verbose || false;
+  const totalStart = Date.now();
+
   console.log(chalk.cyan('\n⚙️  Starting the File Generation Engine...'));
+  if (verbose) {
+    console.log(chalk.gray(`    [config] Template: ${config.template}/${config.architecture}`));
+    console.log(chalk.gray(`    [config] Design: ${config.design}`));
+    console.log(chalk.gray(`    [config] Variant: ${config.variant}`));
+    console.log(chalk.gray(`    [config] Nav: ${config.navCount}, Sidebar: ${config.includeSidebar}`));
+  }
 
   // Inject token into environment for tiged to access private repos
   if (config.token) {
@@ -69,8 +78,13 @@ export async function generateProject(config) {
         spinner: 'dots',
         color: 'blue'
       }).start();
+      const copyStart = Date.now();
       fs.cpSync(localTemplatePath, projectPath, { recursive: true });
       spinner.succeed(`Files copied to ./${projectName}`);
+      if (verbose) {
+        console.log(chalk.gray(`    [copy] Source: ${localTemplatePath}`));
+        console.log(chalk.gray(`    [copy] Duration: ${Date.now() - copyStart}ms`));
+      }
     } else {
       // 🔵 PRODUCTION MODE: Fetch from GitHub
       const targetRepo = config.repo || 'Ebyte-Lab/opusify-templates';
@@ -112,7 +126,9 @@ export async function generateProject(config) {
       spinner: 'dots',
       color: 'cyan'
     }).start();
+    const compileStart = Date.now();
     const allFiles = getAllFiles(projectPath);
+    let compiledCount = 0;
 
     for (const file of allFiles) {
       if (file.match(/\.(tsx|ts|json|md|html|css|mjs)$/)) {
@@ -121,10 +137,18 @@ export async function generateProject(config) {
           const template = Handlebars.compile(content);
           const result = template(config);
           fs.writeFileSync(file, result);
+          compiledCount++;
+          if (verbose) {
+            const relPath = path.relative(projectPath, file);
+            console.log(chalk.gray(`    [compile] Processed — ${relPath}`));
+          }
         }
       }
     }
     compileSpinner.succeed('Template customization complete!');
+    if (verbose) {
+      console.log(chalk.gray(`    [compile] ${compiledCount} files compiled, ${allFiles.length} total scanned (${Date.now() - compileStart}ms)`));
+    }
 
     // 4. Save the config blueprint
     const configFilePath = path.join(projectPath, 'opusify.config.json');
@@ -155,8 +179,12 @@ export async function generateProject(config) {
         color: 'yellow'
       }).start();
       try {
+        const installStart = Date.now();
         execSync('npm install', { cwd: projectPath, stdio: 'pipe' });
         installSpinner.succeed('Dependencies installed successfully!');
+        if (verbose) {
+          console.log(chalk.gray(`    [install] Duration: ${((Date.now() - installStart) / 1000).toFixed(1)}s`));
+        }
       } catch (installError) {
         installSpinner.fail('Could not install dependencies.');
         console.log(chalk.red(`  ✖ NPM Error: ${installError.message}`));
@@ -189,6 +217,9 @@ export async function generateProject(config) {
 
     // 8. Final Success Message
     console.log(chalk.magenta(`\n🎉 Project ${projectName} is ready!`));
+    if (verbose) {
+      console.log(chalk.gray(`    [total] Generation completed in ${((Date.now() - totalStart) / 1000).toFixed(1)}s`));
+    }
     console.log(chalk.white('\nNext steps:'));
     console.log(chalk.cyan(`  cd ${projectName}`));
     console.log(chalk.cyan('  npm run dev\n'));
