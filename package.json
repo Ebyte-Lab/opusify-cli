@@ -40,6 +40,12 @@
     "opusify"
   ],
   "author": "Ebyte Soft Lab <https://github.com/Ebyte-Lab>",
+  "contributors": [
+    "Josephat Sangwa <https://github.com/Josephat-S>",
+    "Ituze Agacyo Ebedi Melecki <https://github.com/ISONIC0788>",
+    "Meekness Bonheur <https://github.com/meekness12>",
+    "Arafati Shema <https://github.com/shemaarafati2020>"
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/Ebyte-Lab/opusify-cli/issues"
