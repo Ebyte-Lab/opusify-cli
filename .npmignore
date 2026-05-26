@@ -1,0 +1,25 @@
+# Templates (fetched from GitHub at runtime)
+templates/
+
+# Development files
+scripts/
+.github/
+.husky/
+ISSUES.md
+CONTRIBUTING.md
+
+# Test outputs
+my-opusify-app*/
+test-*/
+
+# Config files not needed in package
+.eslintrc.json
+.prettierrc
+.gitignore
+
+# Dependencies
+node_modules/
+
+# OS files
+.DS_Store
+Thumbs.db
