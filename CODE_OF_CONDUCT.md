@@ -45,7 +45,7 @@ an individual is officially representing the community in public spaces.
 ## Enforcement
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported to the community leaders at **conduct@ebytelab.com**.
+reported to the community leaders at **conduct@ebytesoftlab.dev**.
 
 All complaints will be reviewed and investigated promptly and fairly.
 
