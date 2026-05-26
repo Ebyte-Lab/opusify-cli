@@ -8,6 +8,7 @@ import Handlebars from 'handlebars';
 import { execSync } from 'child_process';
 import { resolveDependencies } from './dependencies.js';
 import { generateNavigation } from './navigation.js';
+import { applySecurity } from './security.js';
 
 // Setup __dirname for ES Modules to fix the local template path bug
 const __filename = fileURLToPath(import.meta.url);
@@ -160,7 +161,10 @@ export async function generateProject(config) {
     // 6. Resolve dynamic dependencies based on user choices
     resolveDependencies(projectPath, config);
 
-    // 6. AUTOMATION PHASE: Install Dependencies
+    // 7. Apply security hardening if enabled
+    applySecurity(projectPath, config);
+
+    // 8. AUTOMATION PHASE: Install Dependencies
     if (config.noInstall) {
       console.log(chalk.gray('\n⏭️  Skipping npm install (--no-install).'));
     } else {
