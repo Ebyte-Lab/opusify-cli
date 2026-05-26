@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import './globals.css';
+import { navLinks } from '../lib/nav';
 import AnimationProvider from '../components/AnimationProvider';
 {{#if (eq design "Dark Terminal")}}
 import { Terminal } from 'lucide-react';
@@ -10,13 +11,6 @@ export const metadata: Metadata = {
   title: '{{projectName}} - Blog',
   description: 'A {{variant}} blog built with Opusify CLI.',
 };
-
-const navLinks = [
-  { label: 'Home', href: '/' },
-  { label: 'Articles', href: '/articles' },
-  { label: 'Categories', href: '/categories' },
-  { label: 'Authors', href: '/authors' },
-];
 
 function Navbar() {
   return (
@@ -40,11 +34,9 @@ function Navbar() {
             </li>
           ))}
         </ul>
-        <div>
-          <button className="px-4 py-2 rounded-theme bg-primary text-white text-sm font-medium hover:bg-primary-hover transition">
-            Subscribe
-          </button>
-        </div>
+        <button className="px-4 py-2 rounded-theme bg-primary text-white text-sm font-medium hover:bg-primary-hover transition">
+          Subscribe
+        </button>
       </nav>
     </header>
   );

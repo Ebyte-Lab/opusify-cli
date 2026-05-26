@@ -1,18 +1,45 @@
+import SparkLine from '../components/SparkLine';
+import LineChart from '../components/LineChart';
+import DonutChart from '../components/DonutChart';
+import BarChart from '../components/BarChart';
+
 export default function Dashboard() {
   const metrics = [
-    { label: 'Monthly Revenue', value: '$48,295', change: '+12.5%', positive: true },
-    { label: 'Active Users', value: '12,847', change: '+8.2%', positive: true },
-    { label: 'Churn Rate', value: '2.4%', change: '-0.3%', positive: true },
-    { label: 'Avg. Session', value: '4m 32s', change: '-12s', positive: false },
+    { label: 'Monthly Revenue', value: '$48,295', change: '+12.5%', positive: true, sparkData: [32, 35, 38, 41, 44, 48] },
+    { label: 'Active Users', value: '12,847', change: '+8.2%', positive: true, sparkData: [8, 9, 9.8, 10.5, 11.3, 12.8] },
+    { label: 'Churn Rate', value: '2.4%', change: '-0.3%', positive: true, sparkData: [3.2, 2.9, 2.8, 2.7, 2.5, 2.4], color: '#ef4444' },
+    { label: 'Avg. Session', value: '4m 32s', change: '-12s', positive: false, sparkData: [4.1, 4.3, 4.5, 4.4, 4.6, 4.5] },
   ];
 
-  const chartData = [
-    { month: 'Jan', revenue: 32000, users: 8400 },
-    { month: 'Feb', revenue: 35000, users: 9200 },
-    { month: 'Mar', revenue: 38500, users: 9800 },
-    { month: 'Apr', revenue: 41000, users: 10500 },
-    { month: 'May', revenue: 44200, users: 11300 },
-    { month: 'Jun', revenue: 48295, users: 12847 },
+  const revenueData = [
+    { label: 'Jan', value: 28400 },
+    { label: 'Feb', value: 31200 },
+    { label: 'Mar', value: 29800 },
+    { label: 'Apr', value: 35600 },
+    { label: 'May', value: 33100 },
+    { label: 'Jun', value: 38500 },
+    { label: 'Jul', value: 36200 },
+    { label: 'Aug', value: 41000 },
+    { label: 'Sep', value: 39400 },
+    { label: 'Oct', value: 44200 },
+    { label: 'Nov', value: 46100 },
+    { label: 'Dec', value: 48295 },
+  ];
+
+  const revenueBySource = [
+    { label: 'Direct', value: 38, color: 'var(--primary)' },
+    { label: 'Organic', value: 28, color: '#10b981' },
+    { label: 'Referral', value: 18, color: '#f59e0b' },
+    { label: 'Social', value: 16, color: '#8b5cf6' },
+  ];
+
+  const monthlyUsers = [
+    { label: 'Jul', value: 8400 },
+    { label: 'Aug', value: 9200 },
+    { label: 'Sep', value: 9800 },
+    { label: 'Oct', value: 10500 },
+    { label: 'Nov', value: 11300 },
+    { label: 'Dec', value: 12847 },
   ];
 
   const recentTransactions = [
@@ -22,8 +49,6 @@ export default function Dashboard() {
     { id: 'TXN-004', customer: 'Solo Dev', plan: 'Starter', amount: '$29', status: 'Completed', date: 'Yesterday' },
     { id: 'TXN-005', customer: 'BigCo Ltd', plan: 'Enterprise', amount: '$2,400', status: 'Failed', date: '2 days ago' },
   ];
-
-  const maxRevenue = Math.max(...chartData.map((d) => d.revenue));
 
   return (
     <div className="min-h-screen bg-background p-6 lg:p-10">
@@ -41,9 +66,14 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
         {metrics.map((metric) => (
           <div key={metric.label} className="border border-border rounded-theme p-6 bg-card">
-            <p className="text-sm text-text-secondary">{metric.label}</p>
-            <p className="text-3xl font-bold text-foreground mt-1">{metric.value}</p>
-            <p className={`text-sm mt-2 ${metric.positive ? 'text-green-500' : 'text-red-500'}`}>
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="text-sm text-text-secondary">{metric.label}</p>
+                <p className="text-3xl font-bold text-foreground mt-1">{metric.value}</p>
+              </div>
+              <SparkLine data={metric.sparkData} color={metric.color} />
+            </div>
+            <p className={`text-sm mt-3 ${metric.positive ? 'text-green-500' : 'text-red-500'}`}>
               {metric.change} from last month
             </p>
           </div>
@@ -52,27 +82,37 @@ export default function Dashboard() {
 
       {/* Revenue Chart */}
       <div className="border border-border rounded-theme p-6 bg-card mb-10">
-        <h2 className="text-xl font-semibold text-foreground mb-6">Revenue Overview</h2>
-        <div className="flex items-end gap-4 h-48">
-          {chartData.map((point) => (
-            <div key={point.month} className="flex-1 flex flex-col items-center gap-2">
-              <div
-                className="w-full bg-primary rounded-t-sm transition-all"
-                style=\{{ height: `${(point.revenue / maxRevenue) * 100}%` }}
-              />
-              <span className="text-xs text-text-secondary">{point.month}</span>
-            </div>
-          ))}
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-semibold text-foreground">Revenue Overview</h2>
+          <div className="flex gap-1">
+            <button className="px-3 py-1.5 text-xs rounded-theme bg-bg-secondary text-text-secondary hover:text-foreground transition">7D</button>
+            <button className="px-3 py-1.5 text-xs rounded-theme bg-bg-secondary text-text-secondary hover:text-foreground transition">30D</button>
+            <button className="px-3 py-1.5 text-xs rounded-theme bg-bg-secondary text-text-secondary hover:text-foreground transition">90D</button>
+            <button className="px-3 py-1.5 text-xs rounded-theme bg-primary text-white">12M</button>
+          </div>
         </div>
+        <LineChart data={revenueData} height={220} />
         <div className="flex justify-between mt-4 pt-4 border-t border-border">
           <div>
-            <p className="text-sm text-text-secondary">Total Revenue (6mo)</p>
-            <p className="text-lg font-bold text-foreground">$238,995</p>
+            <p className="text-sm text-text-secondary">Total Revenue (12mo)</p>
+            <p className="text-lg font-bold text-foreground">$451,795</p>
           </div>
           <div>
             <p className="text-sm text-text-secondary">Growth Rate</p>
-            <p className="text-lg font-bold text-green-500">+50.9%</p>
+            <p className="text-lg font-bold text-green-500">+70.1%</p>
           </div>
+        </div>
+      </div>
+
+      {/* Two-column: Donut + Bar */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
+        <div className="border border-border rounded-theme p-6 bg-card">
+          <h2 className="text-lg font-semibold text-foreground mb-6">Revenue by Source</h2>
+          <DonutChart segments={revenueBySource} />
+        </div>
+        <div className="border border-border rounded-theme p-6 bg-card">
+          <h2 className="text-lg font-semibold text-foreground mb-6">Monthly Active Users</h2>
+          <BarChart data={monthlyUsers} height={180} />
         </div>
       </div>
 

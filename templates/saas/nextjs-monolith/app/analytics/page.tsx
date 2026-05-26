@@ -1,27 +1,70 @@
+import SparkLine from '../../components/SparkLine';
+import LineChart from '../../components/LineChart';
+import DonutChart from '../../components/DonutChart';
+import BarChart from '../../components/BarChart';
+
 export default function AnalyticsPage() {
-  const trafficSources = [
-    { source: 'Organic Search', visitors: 4521, percentage: 38, color: 'bg-blue-500' },
-    { source: 'Direct', visitors: 2847, percentage: 24, color: 'bg-green-500' },
-    { source: 'Social Media', visitors: 1923, percentage: 16, color: 'bg-purple-500' },
-    { source: 'Referral', visitors: 1456, percentage: 12, color: 'bg-orange-500' },
-    { source: 'Email', visitors: 1100, percentage: 10, color: 'bg-pink-500' },
+  const summaryMetrics = [
+    { label: 'Total Page Views', value: '284,920', change: '+18.3%', positive: true, sparkData: [180, 210, 195, 230, 255, 270, 285] },
+    { label: 'Unique Visitors', value: '11,847', change: '+9.7%', positive: true, sparkData: [7.2, 8.1, 8.8, 9.5, 10.2, 11.0, 11.8] },
+    { label: 'Conversion Rate', value: '7.1%', change: '-0.4%', positive: false, sparkData: [7.8, 7.6, 7.5, 7.3, 7.2, 7.0, 7.1], color: '#ef4444' },
   ];
 
-  const pageViews = [
-    { page: '/dashboard', views: 12450, avgTime: '3m 24s', bounceRate: '18%' },
-    { page: '/analytics', views: 8920, avgTime: '5m 12s', bounceRate: '12%' },
-    { page: '/users', views: 6340, avgTime: '2m 48s', bounceRate: '24%' },
-    { page: '/billing', views: 4210, avgTime: '4m 06s', bounceRate: '15%' },
-    { page: '/settings', views: 3180, avgTime: '1m 52s', bounceRate: '32%' },
-    { page: '/integrations', views: 2890, avgTime: '6m 30s', bounceRate: '8%' },
+  const trafficData = [
+    { label: '1', value: 8200 },
+    { label: '2', value: 7800 },
+    { label: '3', value: 9100 },
+    { label: '4', value: 8600 },
+    { label: '5', value: 9400 },
+    { label: '6', value: 10200 },
+    { label: '7', value: 9800 },
+    { label: '8', value: 8900 },
+    { label: '9', value: 9600 },
+    { label: '10', value: 10800 },
+    { label: '11', value: 11200 },
+    { label: '12', value: 10500 },
+    { label: '13', value: 9900 },
+    { label: '14', value: 10100 },
+    { label: '15', value: 11400 },
+    { label: '16', value: 12100 },
+    { label: '17', value: 11800 },
+    { label: '18', value: 10900 },
+    { label: '19', value: 11500 },
+    { label: '20', value: 12400 },
+    { label: '21', value: 11900 },
+    { label: '22', value: 10600 },
+    { label: '23', value: 11100 },
+    { label: '24', value: 12800 },
+    { label: '25', value: 13200 },
+    { label: '26', value: 12600 },
+    { label: '27', value: 11800 },
+    { label: '28', value: 12300 },
+    { label: '29', value: 13500 },
+    { label: '30', value: 14100 },
+  ];
+
+  const trafficSources = [
+    { label: 'Organic', value: 38, color: 'var(--primary)' },
+    { label: 'Direct', value: 24, color: '#10b981' },
+    { label: 'Social', value: 16, color: '#8b5cf6' },
+    { label: 'Referral', value: 12, color: '#f59e0b' },
+    { label: 'Email', value: 10, color: '#ec4899' },
+  ];
+
+  const topPages = [
+    { label: 'Dashboard', value: 12450 },
+    { label: 'Analytics', value: 8920 },
+    { label: 'Users', value: 6340 },
+    { label: 'Billing', value: 4210 },
+    { label: 'Settings', value: 3180 },
   ];
 
   const conversionFunnel = [
-    { stage: 'Visitors', count: 45000, width: '100%' },
-    { stage: 'Sign Ups', count: 12800, width: '72%' },
-    { stage: 'Activated', count: 8400, width: '48%' },
-    { stage: 'Subscribed', count: 3200, width: '28%' },
-    { stage: 'Enterprise', count: 420, width: '12%' },
+    { stage: 'Visitors', count: 45000, percentage: 100 },
+    { stage: 'Sign Ups', count: 12800, percentage: 72 },
+    { stage: 'Activated', count: 8400, percentage: 48 },
+    { stage: 'Subscribed', count: 3200, percentage: 28 },
+    { stage: 'Enterprise', count: 420, percentage: 12 },
   ];
 
   return (
@@ -38,94 +81,74 @@ export default function AnalyticsPage() {
         </div>
       </div>
 
-      {/* Summary Row */}
+      {/* Summary Metrics */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
-        <div className="border border-border rounded-theme p-6 bg-card">
-          <p className="text-sm text-text-secondary">Total Page Views</p>
-          <p className="text-3xl font-bold text-foreground mt-1">284,920</p>
-          <p className="text-sm text-green-500 mt-2">+18.3% vs last period</p>
-        </div>
-        <div className="border border-border rounded-theme p-6 bg-card">
-          <p className="text-sm text-text-secondary">Unique Visitors</p>
-          <p className="text-3xl font-bold text-foreground mt-1">11,847</p>
-          <p className="text-sm text-green-500 mt-2">+9.7% vs last period</p>
-        </div>
-        <div className="border border-border rounded-theme p-6 bg-card">
-          <p className="text-sm text-text-secondary">Conversion Rate</p>
-          <p className="text-3xl font-bold text-foreground mt-1">7.1%</p>
-          <p className="text-sm text-red-500 mt-2">-0.4% vs last period</p>
+        {summaryMetrics.map((metric) => (
+          <div key={metric.label} className="border border-border rounded-theme p-6 bg-card">
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="text-sm text-text-secondary">{metric.label}</p>
+                <p className="text-3xl font-bold text-foreground mt-1">{metric.value}</p>
+              </div>
+              <SparkLine data={metric.sparkData} color={metric.color} />
+            </div>
+            <p className={`text-sm mt-3 ${metric.positive ? 'text-green-500' : 'text-red-500'}`}>
+              {metric.change} vs last period
+            </p>
+          </div>
+        ))}
+      </div>
+
+      {/* Traffic Over Time */}
+      <div className="border border-border rounded-theme p-6 bg-card mb-10">
+        <h2 className="text-xl font-semibold text-foreground mb-6">Traffic Over Time</h2>
+        <LineChart data={trafficData} height={220} />
+        <div className="flex justify-between mt-4 pt-4 border-t border-border">
+          <div>
+            <p className="text-sm text-text-secondary">Total Views (30d)</p>
+            <p className="text-lg font-bold text-foreground">284,920</p>
+          </div>
+          <div>
+            <p className="text-sm text-text-secondary">Daily Average</p>
+            <p className="text-lg font-bold text-foreground">9,497</p>
+          </div>
+          <div>
+            <p className="text-sm text-text-secondary">Peak Day</p>
+            <p className="text-lg font-bold text-green-500">14,100</p>
+          </div>
         </div>
       </div>
 
+      {/* Two-column: Donut + Bar */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
-        {/* Traffic Sources */}
         <div className="border border-border rounded-theme p-6 bg-card">
           <h2 className="text-lg font-semibold text-foreground mb-6">Traffic Sources</h2>
-          <div className="space-y-4">
-            {trafficSources.map((source) => (
-              <div key={source.source}>
-                <div className="flex justify-between text-sm mb-1">
-                  <span className="text-foreground">{source.source}</span>
-                  <span className="text-text-secondary">{source.visitors.toLocaleString()} ({source.percentage}%)</span>
-                </div>
-                <div className="w-full h-2 bg-bg-secondary rounded-full overflow-hidden">
-                  <div
-                    className={`h-full rounded-full ${source.color}`}
-                    style=\{{ width: `${source.percentage * 2.5}%` }}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
+          <DonutChart segments={trafficSources} />
         </div>
-
-        {/* Conversion Funnel */}
         <div className="border border-border rounded-theme p-6 bg-card">
-          <h2 className="text-lg font-semibold text-foreground mb-6">Conversion Funnel</h2>
-          <div className="space-y-3">
-            {conversionFunnel.map((stage) => (
-              <div key={stage.stage} className="flex items-center gap-4">
-                <div className="w-24 text-sm text-text-secondary">{stage.stage}</div>
-                <div className="flex-1">
-                  <div
-                    className="h-8 bg-primary rounded-theme flex items-center px-3 transition-all"
-                    style=\{{ width: stage.width }}
-                  >
-                    <span className="text-xs text-white font-medium">{stage.count.toLocaleString()}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+          <h2 className="text-lg font-semibold text-foreground mb-6">Top Pages</h2>
+          <BarChart data={topPages} height={180} />
         </div>
       </div>
 
-      {/* Top Pages */}
-      <div className="border border-border rounded-theme bg-card">
-        <div className="px-6 py-4 border-b border-border">
-          <h2 className="text-lg font-semibold text-foreground">Top Pages</h2>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-border">
-                <th className="text-left px-6 py-3 text-xs font-medium text-text-secondary uppercase">Page</th>
-                <th className="text-left px-6 py-3 text-xs font-medium text-text-secondary uppercase">Views</th>
-                <th className="text-left px-6 py-3 text-xs font-medium text-text-secondary uppercase">Avg. Time</th>
-                <th className="text-left px-6 py-3 text-xs font-medium text-text-secondary uppercase">Bounce Rate</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {pageViews.map((page) => (
-                <tr key={page.page} className="hover:bg-bg-secondary transition">
-                  <td className="px-6 py-4 text-sm font-mono text-primary">{page.page}</td>
-                  <td className="px-6 py-4 text-sm text-foreground">{page.views.toLocaleString()}</td>
-                  <td className="px-6 py-4 text-sm text-text-secondary">{page.avgTime}</td>
-                  <td className="px-6 py-4 text-sm text-text-secondary">{page.bounceRate}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      {/* Conversion Funnel */}
+      <div className="border border-border rounded-theme p-6 bg-card">
+        <h2 className="text-lg font-semibold text-foreground mb-6">Conversion Funnel</h2>
+        <div className="space-y-3">
+          {conversionFunnel.map((stage) => (
+            <div key={stage.stage} className="flex items-center gap-4">
+              <div className="w-24 text-sm text-text-secondary flex-shrink-0">{stage.stage}</div>
+              <div className="flex-1">
+                <div
+                  className="h-9 rounded-theme flex items-center px-3 transition-all"
+                  style=\{{ width: `${stage.percentage}%`, backgroundColor: 'var(--primary)', opacity: 0.15 + (stage.percentage / 100) * 0.85 }}
+                >
+                  <span className="text-xs font-medium text-foreground">{stage.count.toLocaleString()}</span>
+                </div>
+              </div>
+              <div className="w-12 text-right text-sm font-medium text-text-secondary">{stage.percentage}%</div>
+            </div>
+          ))}
         </div>
       </div>
     </div>

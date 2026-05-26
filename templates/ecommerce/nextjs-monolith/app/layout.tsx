@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import './globals.css';
+import { navLinks } from '../lib/nav';
 import AnimationProvider from '../components/AnimationProvider';
 {{#if (eq design "Dark Terminal")}}
 import { Terminal } from 'lucide-react';
@@ -10,13 +11,6 @@ export const metadata: Metadata = {
   title: '{{projectName}} - Store',
   description: 'A {{variant}} e-commerce store built with Opusify CLI.',
 };
-
-const navLinks = [
-  { label: 'Home', href: '/' },
-  { label: 'Products', href: '/products' },
-  { label: 'Cart', href: '/cart' },
-  { label: 'Account', href: '/account' },
-];
 
 function Navbar() {
   return (

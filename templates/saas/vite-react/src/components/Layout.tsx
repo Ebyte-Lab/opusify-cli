@@ -1,12 +1,5 @@
 import { Link, Outlet } from 'react-router-dom';
-
-const navLinks = [
-  { label: 'Dashboard', href: '/' },
-  { label: 'Analytics', href: '/analytics' },
-  { label: 'Users', href: '/users' },
-  { label: 'Billing', href: '/billing' },
-  { label: 'Settings', href: '/settings' },
-];
+import { navLinks } from '../lib/nav';
 
 function Navbar() {
   return (

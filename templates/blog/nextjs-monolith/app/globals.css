@@ -51,9 +51,132 @@
   --radius: 0.25rem;
 }
 
+
+/* ===== Brutalist Theme ===== */
+[data-theme="Brutalist"] {
+  --bg-color: #ffffff;
+  --bg-secondary: #f0f0f0;
+  --text-color: #000000;
+  --text-secondary: #333333;
+  --primary: #dc2626;
+  --primary-hover: #b91c1c;
+  --border-color: #000000;
+  --card-bg: #ffffff;
+  --font-family: 'Courier New', ui-monospace, monospace;
+  --radius: 0;
+}
+
+/* ===== Soft Pastel Theme ===== */
+[data-theme="Soft Pastel"] {
+  --bg-color: #fdf4ff;
+  --bg-secondary: #f5f0ff;
+  --text-color: #3b1f5e;
+  --text-secondary: #7c5a9e;
+  --primary: #a855f7;
+  --primary-hover: #9333ea;
+  --border-color: #e9d5ff;
+  --card-bg: #ffffff;
+  --font-family: 'Inter', system-ui, sans-serif;
+  --radius: 1.5rem;
+}
+
+/* ===== Corporate Blue Theme ===== */
+[data-theme="Corporate Blue"] {
+  --bg-color: #f8fafc;
+  --bg-secondary: #f1f5f9;
+  --text-color: #0f172a;
+  --text-secondary: #475569;
+  --primary: #1e40af;
+  --primary-hover: #1e3a8a;
+  --border-color: #cbd5e1;
+  --card-bg: #ffffff;
+  --font-family: 'Georgia', 'Times New Roman', serif;
+  --radius: 0.25rem;
+}
+
+/* ===== Neon Cyberpunk Theme ===== */
+[data-theme="Neon Cyberpunk"] {
+  --bg-color: #0a0015;
+  --bg-secondary: #1a0030;
+  --text-color: #e0f2fe;
+  --text-secondary: #7dd3fc;
+  --primary: #f472b6;
+  --primary-hover: #ec4899;
+  --border-color: #581c87;
+  --card-bg: rgba(88, 28, 135, 0.2);
+  --font-family: 'Inter', system-ui, sans-serif;
+  --radius: 0.75rem;
+}
+
+[data-theme="Neon Cyberpunk"] .neon-glow {
+  box-shadow: 0 0 10px rgba(244, 114, 182, 0.4), 0 0 20px rgba(244, 114, 182, 0.2);
+}
+
+/* ===== Earth Tones Theme ===== */
+[data-theme="Earth Tones"] {
+  --bg-color: #faf7f2;
+  --bg-secondary: #f5efe6;
+  --text-color: #3d2c1e;
+  --text-secondary: #78614e;
+  --primary: #b45309;
+  --primary-hover: #92400e;
+  --border-color: #d6c4a8;
+  --card-bg: #fffdf8;
+  --font-family: 'Inter', system-ui, sans-serif;
+  --radius: 0.75rem;
+}
+
 /* ===== Apply variables globally ===== */
 body {
   background-color: var(--bg-color);
   color: var(--text-color);
   font-family: var(--font-family);
+}
+
+/* ===== Article Typography ===== */
+.article-content h2 {
+  scroll-margin-top: 5rem;
+}
+
+.article-content pre {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin-bottom: 1.5rem;
+  font-size: 0.875rem;
+  line-height: 1.7;
+}
+
+.article-content code {
+  font-family: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
+}
+
+.article-content blockquote {
+  border-left: 4px solid var(--primary);
+  padding-left: 1rem;
+  font-style: italic;
+  color: var(--text-secondary);
+  margin: 1.5rem 0;
+}
+
+.article-content ul,
+.article-content ol {
+  margin-left: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.article-content ul {
+  list-style-type: disc;
+}
+
+.article-content ol {
+  list-style-type: decimal;
+}
+
+.article-content li {
+  margin-bottom: 0.5rem;
+  color: var(--text-color);
+  line-height: 1.7;
 }
