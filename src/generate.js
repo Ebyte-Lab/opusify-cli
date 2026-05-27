@@ -3,7 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import chalk from 'chalk';
 import ora from 'ora';
-import tiged from 'tiged';
+import { downloadTemplate } from 'giget'; // ⬅Swapped tiged for giget
 import Handlebars from 'handlebars';
 import { execSync } from 'child_process';
 import { resolveDependencies } from './dependencies.js';
@@ -45,7 +45,7 @@ export async function generateProject(config) {
     console.log(chalk.gray(`    [config] Nav: ${config.navCount}, Sidebar: ${config.includeSidebar}`));
   }
 
-  // Inject token into environment for tiged to access private repos
+  // Inject token into environment for private repos
   if (config.token) {
     process.env.GITHUB_TOKEN = config.token;
   }
@@ -62,7 +62,6 @@ export async function generateProject(config) {
   config.projectName = projectName; // Update config with final name
 
   // 2. Check for Local vs GitHub
-  // FIX: Look in the CLI's installation directory, not the user's cwd
   const localTemplatePath = path.join(
     __dirname,
     '..', // Go up one level from 'src' to reach the root where 'templates' is
@@ -87,29 +86,33 @@ export async function generateProject(config) {
         console.log(chalk.gray(`    [copy] Duration: ${Date.now() - copyStart}ms`));
       }
     } else {
-      // 🔵 PRODUCTION MODE: Fetch from GitHub
+      // 🔵 PRODUCTION MODE: Fetch from GitHub using GIGET
       const targetRepo = config.repo || 'Ebyte-Lab/opusify-templates';
-      const repoURI = `${targetRepo}/${config.template}/${config.architecture}`;
+      // giget syntax requires the provider prefix: github:org/repo/subdir
+      const repoInput = `github:${targetRepo}/${config.template}/${config.architecture}`;
       
       const spinner = ora({
-        text: `Fetching template from GitHub (${repoURI})...`,
+        text: `Fetching template from GitHub (${repoInput})...`,
         spinner: 'dots',
         color: 'blue'
       }).start();
 
       try {
-        const emitter = tiged(repoURI, { disableCache: true, force: true });
-        await emitter.clone(projectPath);
+        await downloadTemplate(repoInput, {
+          dir: projectPath,
+          force: true,
+          auth: process.env.GITHUB_TOKEN // Passes token natively to giget
+        });
         spinner.succeed(`Files copied to ./${projectName}`);
       } catch (fetchError) {
-        spinner.fail(`Failed to fetch template from GitHub: ${repoURI}`);
+        spinner.fail(`Failed to fetch template from GitHub: ${repoInput}`);
         
         // SPECIFIC NETWORK & GITHUB ERROR HANDLING
         const errStr = fetchError.toString().toLowerCase();
         if (errStr.includes('could not resolve') || errStr.includes('econnrefused') || errStr.includes('offline') || errStr.includes('network')) {
           console.log(chalk.red('  ✖ Error: Could not reach GitHub. Check your internet connection.'));
           console.log(chalk.gray('  Suggested fix: Ensure you are connected to the internet and try again.'));
-        } else if (errStr.includes('could not find commit hash') || errStr.includes('404')) {
+        } else if (errStr.includes('404') || errStr.includes('not found')) {
           console.log(chalk.red('  ✖ Error: The specified template or repository does not exist.'));
           if (!config.token) {
             console.log(chalk.yellow('  ⚠️  Hint: If this repository is private, you must provide a GitHub token using --token or set the OPUSIFY_GITHUB_TOKEN environment variable.'));
@@ -117,7 +120,7 @@ export async function generateProject(config) {
         } else {
           console.log(chalk.red(`  ✖ Error details: ${fetchError.message}`));
         }
-        throw new Error('FETCH_FAILED');
+        throw new Error('FETCH_FAILED', { cause: fetchError });
       }
     }
 
@@ -211,7 +214,7 @@ export async function generateProject(config) {
           stdio: 'ignore',
         });
         gitSpinner.succeed('Git initialized!');
-      } catch (gitError) {
+      }  catch {
         gitSpinner.fail('Could not initialize Git.');
         console.log(chalk.gray('  Suggested fix: Ensure git is installed on your system or run "git init" manually.'));
       }
@@ -248,7 +251,7 @@ export async function generateProject(config) {
       try {
         fs.rmSync(projectPath, { recursive: true, force: true });
         console.log(chalk.green('  ✔ Cleanup complete.'));
-      } catch (cleanupError) {
+      } catch {
         console.log(chalk.red(`  ✖ Failed to clean up directory. You may need to delete ./${projectName} manually.`));
       }
     }
