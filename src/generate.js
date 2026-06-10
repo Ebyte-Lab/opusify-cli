@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import crypto from 'crypto'; // <-- ADDED: Node.js core module for hashing
+import crypto from 'crypto'; 
 import chalk from 'chalk';
 import ora from 'ora';
 import { downloadTemplate } from 'giget'; 
@@ -34,7 +34,7 @@ function getAllFiles(dirPath, arrayOfFiles = []) {
   return arrayOfFiles;
 }
 
-// <-- ADDED: Utility function to generate a SHA-256 hash from file contents
+// Utility function to generate a SHA-256 hash from file contents
 function getFileHash(data) {
   return crypto.createHash('sha256').update(data).digest('hex');
 }
@@ -59,8 +59,6 @@ export async function generateProject(config) {
   let projectName = config.projectName;
   let projectPath = path.join(process.cwd(), projectName);
 
-  // <-- MODIFIED: We no longer auto-rename the folder if it exists. 
-  // We WANT to be able to target an existing folder so we can deduplicate and update it!
   if (!fs.existsSync(projectPath)) {
     fs.mkdirSync(projectPath, { recursive: true });
   }
@@ -74,8 +72,7 @@ export async function generateProject(config) {
     config.architecture,
   );
 
-  // <-- ADDED: Create a temporary staging directory. 
-  // We cannot copy directly into projectPath anymore, otherwise we'd overwrite user edits before hashing!
+  // Create a temporary staging directory
   const stagingPath = path.join(process.cwd(), `.opusify-staging-${Date.now()}`);
 
   try {
@@ -88,7 +85,6 @@ export async function generateProject(config) {
       }).start();
       const copyStart = Date.now();
       
-      // Copy to STAGING instead of final project path
       fs.cpSync(localTemplatePath, stagingPath, { recursive: true }); 
       
       spinner.succeed(`Template resolved for ./${projectName}`);
@@ -108,7 +104,6 @@ export async function generateProject(config) {
       }).start();
 
       try {
-        // Fetch to STAGING instead of final project path
         await downloadTemplate(repoInput, {
           dir: stagingPath,
           force: true,
@@ -117,7 +112,6 @@ export async function generateProject(config) {
         spinner.succeed(`Template fetched for ./${projectName}`);
       } catch (fetchError) {
         spinner.fail(`Failed to fetch template from GitHub: ${repoInput}`);
-        // ... (existing error handling kept intact)
         throw new Error('FETCH_FAILED', { cause: fetchError });
       }
     }
@@ -130,17 +124,14 @@ export async function generateProject(config) {
     }).start();
     const compileStart = Date.now();
     
-    // Read from staging directory
     const allFiles = getAllFiles(stagingPath);
     let compiledCount = 0;
-    let skippedCount = 0; // Track skipped files
+    let skippedCount = 0; 
 
     for (const tempFile of allFiles) {
-      // Calculate where this file SHOULD go in the final project
       const relativePath = path.relative(stagingPath, tempFile);
       const targetFile = path.join(projectPath, relativePath);
 
-      // Ensure the target directory exists
       const targetDir = path.dirname(targetFile);
       if (!fs.existsSync(targetDir)) {
         fs.mkdirSync(targetDir, { recursive: true });
@@ -151,7 +142,6 @@ export async function generateProject(config) {
 
       if (isTextFile) {
         let content = fs.readFileSync(tempFile, 'utf-8');
-        let modified = false;
 
         const hasStructuralBlocks = /\{\{\s*(#if|#unless|else|\/if|\/unless)\b/.test(content);
 
@@ -161,46 +151,37 @@ export async function generateProject(config) {
 
           const template = Handlebars.compile(content);
           content = template(config);
-          modified = true;
         } else {
           const placeholders = ['projectName', 'template', 'variant', 'architecture', 'design', 'navCount', 'includeSidebar', 'enableSecurity'];
           for (const key of placeholders) {
             const token = `{{${key}}}`;
             if (content.includes(token)) {
               content = content.replaceAll(token, config[key] !== undefined ? config[key] : '');
-              modified = true;
             }
           }
         }
 
         if (content.includes('\\{{')) {
           content = content.replaceAll('\\{{', '{{');
-          modified = true;
         }
         
-        // Output is our compiled string
         finalContent = content; 
       } else {
-        // If it's an image/binary, just read the buffer
         finalContent = fs.readFileSync(tempFile); 
       }
 
-      // <-- ALGORITHM STEP: Hash comparison for Deduplication
       const newHash = getFileHash(finalContent);
       let shouldWrite = true;
 
-      // Check if the file already exists in the destination
       if (fs.existsSync(targetFile)) {
         const existingContent = fs.readFileSync(targetFile);
         const existingHash = getFileHash(existingContent);
         
-        // If hashes match exactly, we skip the file write
         if (newHash === existingHash) {
           shouldWrite = false;
         }
       }
 
-      // Final Disk Operation
       if (shouldWrite) {
         fs.writeFileSync(targetFile, finalContent);
         compiledCount++;
@@ -215,7 +196,6 @@ export async function generateProject(config) {
       }
     }
 
-    // Safely remove the temporary staging directory
     fs.rmSync(stagingPath, { recursive: true, force: true });
 
     compileSpinner.succeed('Template compilation & deduplication complete!');
@@ -223,20 +203,13 @@ export async function generateProject(config) {
       console.log(chalk.gray(`    [audit] ${compiledCount} files written, ${skippedCount} files skipped (${Date.now() - compileStart}ms)`));
     }
 
-    // 4. Save the config blueprint
     const configFilePath = path.join(projectPath, 'opusify.config.json');
     fs.writeFileSync(configFilePath, JSON.stringify(config, null, 2));
 
-    // 5. Generate dynamic navigation based on navCount
     generateNavigation(projectPath, config);
-
-    // 6. Resolve dynamic dependencies based on user choices
     resolveDependencies(projectPath, config);
-
-    // 7. Apply security hardening if enabled
     applySecurity(projectPath, config);
 
-    // 8. AUTOMATION PHASE: Install Dependencies
     if (config.noInstall) {
       console.log(chalk.gray('\n⏭️  Skipping npm install (--no-install).'));
     } else {
@@ -265,7 +238,6 @@ export async function generateProject(config) {
       }
     }
 
-    // 9. Git Initialization
     if (config.initGit) {
       const gitSpinner = ora({
         text: 'Initializing Git repository...',
@@ -288,7 +260,6 @@ export async function generateProject(config) {
       console.log(chalk.gray('\n⏭️  Skipping Git initialization.'));
     }
 
-    // 10. Final Success Message
     console.log(chalk.magenta(`\n🎉 Project ${projectName} is ready!`));
     if (verbose) {
       console.log(chalk.gray(`    [total] Generation completed in ${((Date.now() - totalStart) / 1000).toFixed(1)}s`));
@@ -299,7 +270,6 @@ export async function generateProject(config) {
   } catch (error) {
     console.log(chalk.red('\n🚨 Generation failed.'));
     
-    // Clean up staging if it crashed halfway
     if (fs.existsSync(stagingPath)) {
       try {
         fs.rmSync(stagingPath, { recursive: true, force: true });
