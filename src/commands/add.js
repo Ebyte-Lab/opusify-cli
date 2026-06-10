@@ -73,7 +73,7 @@ export async function addAction(plugin) {
     try {
       execSync('npm install', { cwd, stdio: 'pipe' });
       spinner.succeed('Dependencies installed!');
-    } catch (err) {
+    } catch {
       spinner.fail('Could not install dependencies. Run npm install manually.');
     }
   }

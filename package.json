@@ -40,6 +40,12 @@
     "opusify"
   ],
   "author": "Ebyte Soft Lab <https://github.com/Ebyte-Lab>",
+  "contributors": [
+    "Josephat Sangwa <https://github.com/Josephat-S>",
+    "Ituze Agacyo Ebedi Melecki <https://github.com/ISONIC0788>",
+    "Meekness Bonheur <https://github.com/meekness12>",
+    "Arafati Shema <https://github.com/shemaarafati2020>"
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/Ebyte-Lab/opusify-cli/issues"
@@ -53,13 +59,14 @@
     "commander": "^14.0.3",
     "giget": "^3.2.0",
     "handlebars": "^4.7.9",
-    "inquirer": "^13.4.3",
-    "ora": "^9.4.0",
-    "tiged": "^2.12.7"
+    "inquirer": "^14.0.0",
+    "ora": "^9.4.0"
   },
   "devDependencies": {
-    "eslint": "^8.57.1",
-    "husky": "^8.0.3",
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.4.0",
+    "globals": "^17.6.0",
+    "husky": "^9.1.7",
     "prettier": "^3.8.3"
   },
   "overrides": {
