@@ -26,7 +26,7 @@ export default function CartPage() {
                   {/* Image */}
                   <div
                     className="w-24 h-24 rounded-theme flex-shrink-0"
-                    style=\{{ backgroundColor: item.imageColor }}
+                    style={{ backgroundColor: item.imageColor }}
                   />
 
                   {/* Info */}

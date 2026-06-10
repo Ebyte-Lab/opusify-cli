@@ -47,7 +47,7 @@ export default function Dashboard() {
             <div key={point.month} className="flex-1 flex flex-col items-center gap-2">
               <div
                 className="w-full bg-primary rounded-t-sm transition-all"
-                style=\{{ height: `${(point.revenue / maxRevenue) * 100}%` }}
+                style={{ height: `${(point.revenue / maxRevenue) * 100}%` }}
               />
               <span className="text-xs text-text-secondary">{point.month}</span>
             </div>

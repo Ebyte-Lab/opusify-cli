@@ -8,7 +8,7 @@ export default function BarChart({ data, height = 200 }: BarChartProps) {
 
   return (
     <div className="w-full">
-      <div className="flex items-end gap-3" style=\{{ height }}>
+      <div className="flex items-end gap-3" style={{ height }}>
         {data.map((item) => {
           const barHeight = (item.value / max) * 100;
           return (
@@ -18,7 +18,7 @@ export default function BarChart({ data, height = 200 }: BarChartProps) {
               </span>
               <div
                 className="w-full rounded-t-sm transition-all duration-300 hover:opacity-80"
-                style=\{{ height: `${barHeight}%`, backgroundColor: 'var(--primary)' }}
+                style={{ height: `${barHeight}%`, backgroundColor: 'var(--primary)' }}
               />
             </div>
           );

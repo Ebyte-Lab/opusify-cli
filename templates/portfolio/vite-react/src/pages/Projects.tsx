@@ -38,7 +38,7 @@ export default function Projects() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {projects.map((project) => (
             <div key={project.title} className="group border border-border rounded-theme bg-card overflow-hidden hover:shadow-lg hover:scale-[1.02] transition-all duration-300">
-              <div className="aspect-video w-full" style=\{{ backgroundColor: project.color }}>
+              <div className="aspect-video w-full" style={{ backgroundColor: project.color }}>
                 <div className="w-full h-full flex items-center justify-center">
                   <span className="text-white/70 text-sm font-medium">Project Preview</span>
                 </div>

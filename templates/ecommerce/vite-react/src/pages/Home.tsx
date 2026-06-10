@@ -19,7 +19,7 @@ export default function Home() {
     <div className="min-h-screen bg-background">
       {/* Hero */}
       <section className="relative overflow-hidden bg-bg-secondary">
-        <div className="absolute inset-0 opacity-30" style=\{{ background: 'radial-gradient(ellipse at 70% 50%, var(--primary) 0%, transparent 60%)' }} />
+        <div className="absolute inset-0 opacity-30" style={{ background: 'radial-gradient(ellipse at 70% 50%, var(--primary) 0%, transparent 60%)' }} />
         <div className="relative max-w-7xl mx-auto px-6 py-24 lg:py-32">
           <div className="max-w-2xl">
             <h1 className="text-4xl lg:text-6xl font-bold tracking-tight text-foreground leading-tight">
@@ -46,7 +46,7 @@ export default function Home() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
           {categories.map((cat) => (
             <Link key={cat.name} to="/products" className="group relative overflow-hidden rounded-theme border border-border bg-card hover:shadow-lg transition-all duration-300">
-              <div className="aspect-[4/3] transition-transform duration-300 group-hover:scale-105" style=\{{ backgroundColor: cat.color, opacity: 0.7 }} />
+              <div className="aspect-[4/3] transition-transform duration-300 group-hover:scale-105" style={{ backgroundColor: cat.color, opacity: 0.7 }} />
               <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/10 group-hover:bg-black/20 transition">
                 <h3 className="text-lg font-bold text-white drop-shadow-md">{cat.name}</h3>
                 <p className="text-sm text-white/80 mt-1 drop-shadow-md">{cat.count} items</p>
@@ -66,7 +66,7 @@ export default function Home() {
           {featured.map((product) => (
             <Link key={product.slug} to={`/products/${product.slug}`} className="group block border border-border rounded-theme bg-card overflow-hidden hover:shadow-lg transition-all duration-300">
               <div className="relative aspect-square overflow-hidden">
-                <div className="w-full h-full transition-transform duration-300 group-hover:scale-105" style=\{{ backgroundColor: product.color }} />
+                <div className="w-full h-full transition-transform duration-300 group-hover:scale-105" style={{ backgroundColor: product.color }} />
               </div>
               <div className="p-4">
                 <h3 className="font-medium text-foreground group-hover:text-primary transition text-sm">{product.name}</h3>

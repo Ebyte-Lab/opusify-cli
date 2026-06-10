@@ -30,7 +30,7 @@ export default function ProductDetail() {
             <div className="aspect-square rounded-theme bg-bg-secondary border border-border" />
             <div className="grid grid-cols-4 gap-3 mt-3">
               {[0, 1, 2, 3].map((i) => (
-                <div key={i} className={`aspect-square rounded-theme border cursor-pointer transition ${i === 0 ? 'border-primary ring-2 ring-primary/20' : 'border-border hover:border-primary/50'}`} style=\{{ backgroundColor: i === 0 ? '#f1f5f9' : i === 1 ? '#e2e8f0' : i === 2 ? '#cbd5e1' : '#94a3b8' }} />
+                <div key={i} className={`aspect-square rounded-theme border cursor-pointer transition ${i === 0 ? 'border-primary ring-2 ring-primary/20' : 'border-border hover:border-primary/50'}`} style={{ backgroundColor: i === 0 ? '#f1f5f9' : i === 1 ? '#e2e8f0' : i === 2 ? '#cbd5e1' : '#94a3b8' }} />
               ))}
             </div>
           </div>
@@ -63,7 +63,7 @@ export default function ProductDetail() {
               <h3 className="text-sm font-semibold text-foreground mb-3">Color</h3>
               <div className="flex gap-3">
                 {colors.map((c, i) => (
-                  <button key={c.name} className={`w-8 h-8 rounded-full border-2 transition ${i === 0 ? 'border-primary ring-2 ring-primary/20' : 'border-border hover:border-primary/50'}`} style=\{{ backgroundColor: c.hex }} aria-label={c.name} />
+                  <button key={c.name} className={`w-8 h-8 rounded-full border-2 transition ${i === 0 ? 'border-primary ring-2 ring-primary/20' : 'border-border hover:border-primary/50'}`} style={{ backgroundColor: c.hex }} aria-label={c.name} />
                 ))}
               </div>
             </div>

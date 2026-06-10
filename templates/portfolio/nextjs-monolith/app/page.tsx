@@ -39,7 +39,7 @@ export default function Home() {
         {/* Decorative gradient blob */}
         <div
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full blur-3xl pointer-events-none"
-          style=\{{ background: 'radial-gradient(circle, var(--primary) 0%, transparent 70%)', opacity: 0.12 }}
+          style={{ background: 'radial-gradient(circle, var(--primary) 0%, transparent 70%)', opacity: 0.12 }}
         />
 
         <div className="relative z-10">
