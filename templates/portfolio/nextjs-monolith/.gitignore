@@ -3,3 +3,4 @@ node_modules
 
 # editos files
 .vscode
+.next
