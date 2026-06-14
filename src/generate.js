@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { createHash } from 'crypto';
 import { fileURLToPath } from 'url';
 import chalk from 'chalk';
 import ora from 'ora';
@@ -13,6 +14,11 @@ import { applySecurity } from './security.js';
 // Setup __dirname for ES Modules to fix the local template path bug
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Compute SHA-256 hash of a string
+function sha256(content) {
+  return createHash('sha256').update(content).digest('hex');
+}
 
 // Register custom Handlebars helpers
 Handlebars.registerHelper('eq', function (a, b) {
@@ -133,6 +139,7 @@ export async function generateProject(config) {
     const compileStart = Date.now();
     const allFiles = getAllFiles(projectPath);
     let compiledCount = 0;
+    let skippedCount = 0;
 
     for (const file of allFiles) {
       if (file.match(/\.(tsx|ts|json|md|html|css|mjs)$/)) {
@@ -140,18 +147,31 @@ export async function generateProject(config) {
         if (content.includes('{{')) {
           const template = Handlebars.compile(content);
           const result = template(config);
-          fs.writeFileSync(file, result);
-          compiledCount++;
-          if (verbose) {
-            const relPath = path.relative(projectPath, file);
-            console.log(chalk.gray(`    [compile] Processed — ${relPath}`));
+
+          // Deduplication: skip write if output matches existing file
+          const newHash = sha256(result);
+          const existingHash = sha256(content);
+
+          if (newHash === existingHash) {
+            skippedCount++;
+            if (verbose) {
+              const relPath = path.relative(projectPath, file);
+              console.log(chalk.gray(`    [compile] Skipped (unchanged) — ${relPath}`));
+            }
+          } else {
+            fs.writeFileSync(file, result);
+            compiledCount++;
+            if (verbose) {
+              const relPath = path.relative(projectPath, file);
+              console.log(chalk.gray(`    [compile] Processed — ${relPath}`));
+            }
           }
         }
       }
     }
     compileSpinner.succeed('Template customization complete!');
     if (verbose) {
-      console.log(chalk.gray(`    [compile] ${compiledCount} files compiled, ${allFiles.length} total scanned (${Date.now() - compileStart}ms)`));
+      console.log(chalk.gray(`    [compile] ${compiledCount} files written, ${skippedCount} unchanged, ${allFiles.length} total scanned (${Date.now() - compileStart}ms)`));
     }
 
     // 4. Save the config blueprint
