@@ -51,7 +51,7 @@ export default function Products() {
               {products.map((product) => (
                 <Link key={product.slug} to={`/products/${product.slug}`} className="group block border border-border rounded-theme bg-card overflow-hidden hover:shadow-lg transition-all duration-300">
                   <div className="relative aspect-square overflow-hidden">
-                    <div className="w-full h-full transition-transform duration-300 group-hover:scale-105" style=\{{ backgroundColor: product.color }} />
+                    <div className="w-full h-full transition-transform duration-300 group-hover:scale-105" style={{ backgroundColor: product.color }} />
                     {product.badge && (
                       <span className={`absolute top-3 left-3 px-2.5 py-1 text-xs font-semibold rounded-theme text-white ${product.badge === 'Sale' ? 'bg-red-500' : 'bg-primary'}`}>
                         {product.badge}

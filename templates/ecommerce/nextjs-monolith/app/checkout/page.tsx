@@ -193,7 +193,7 @@ export default function CheckoutPage() {
                   <div key={i} className="flex items-center gap-3">
                     <div
                       className="w-12 h-12 rounded-theme flex-shrink-0"
-                      style=\{{ backgroundColor: item.imageColor }}
+                      style={{ backgroundColor: item.imageColor }}
                     />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-foreground truncate">{item.name}</p>

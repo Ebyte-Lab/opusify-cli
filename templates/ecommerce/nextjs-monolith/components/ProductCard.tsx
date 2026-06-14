@@ -19,7 +19,7 @@ export default function ProductCard({ name, price, originalPrice, imageColor, ba
       <div className="relative aspect-square overflow-hidden">
         <div
           className="w-full h-full transition-transform duration-300 group-hover:scale-105"
-          style=\{{ backgroundColor: imageColor }}
+          style={{ backgroundColor: imageColor }}
         />
         {/* Badge */}
         {badge && (

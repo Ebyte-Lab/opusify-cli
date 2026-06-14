@@ -1,9 +1,10 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import crypto from 'crypto'; 
 import chalk from 'chalk';
 import ora from 'ora';
-import { downloadTemplate } from 'giget'; // ⬅Swapped tiged for giget
+import { downloadTemplate } from 'giget'; 
 import Handlebars from 'handlebars';
 import { execSync } from 'child_process';
 import { resolveDependencies } from './dependencies.js';
@@ -33,6 +34,11 @@ function getAllFiles(dirPath, arrayOfFiles = []) {
   return arrayOfFiles;
 }
 
+// Utility function to generate a SHA-256 hash from file contents
+function getFileHash(data) {
+  return crypto.createHash('sha256').update(data).digest('hex');
+}
+
 export async function generateProject(config) {
   const verbose = config.verbose || false;
   const totalStart = Date.now();
@@ -53,34 +59,35 @@ export async function generateProject(config) {
   let projectName = config.projectName;
   let projectPath = path.join(process.cwd(), projectName);
 
-  // 1. Resolve naming collisions
-  while (fs.existsSync(projectPath)) {
-    const randomSuffix = Math.floor(Math.random() * 10000);
-    projectName = `${config.projectName}-${randomSuffix}`;
-    projectPath = path.join(process.cwd(), projectName);
+  if (!fs.existsSync(projectPath)) {
+    fs.mkdirSync(projectPath, { recursive: true });
   }
-  config.projectName = projectName; // Update config with final name
 
   // 2. Check for Local vs GitHub
   const localTemplatePath = path.join(
     __dirname,
-    '..', // Go up one level from 'src' to reach the root where 'templates' is
+    '..', 
     'templates',
     config.template,
     config.architecture,
   );
 
+  // Create a temporary staging directory
+  const stagingPath = path.join(process.cwd(), `.opusify-staging-${Date.now()}`);
+
   try {
     if (fs.existsSync(localTemplatePath)) {
       // 🟢 DEVELOPMENT MODE: Local folder found
       const spinner = ora({
-        text: 'DEV MODE: Copying local template...',
+        text: 'DEV MODE: Copying local template to staging...',
         spinner: 'dots',
         color: 'blue'
       }).start();
       const copyStart = Date.now();
-      fs.cpSync(localTemplatePath, projectPath, { recursive: true });
-      spinner.succeed(`Files copied to ./${projectName}`);
+      
+      fs.cpSync(localTemplatePath, stagingPath, { recursive: true }); 
+      
+      spinner.succeed(`Template resolved for ./${projectName}`);
       if (verbose) {
         console.log(chalk.gray(`    [copy] Source: ${localTemplatePath}`));
         console.log(chalk.gray(`    [copy] Duration: ${Date.now() - copyStart}ms`));
@@ -88,7 +95,6 @@ export async function generateProject(config) {
     } else {
       // 🔵 PRODUCTION MODE: Fetch from GitHub using GIGET
       const targetRepo = config.repo || 'Ebyte-Lab/opusify-templates';
-      // giget syntax requires the provider prefix: github:org/repo/subdir
       const repoInput = `github:${targetRepo}/${config.template}/${config.architecture}`;
       
       const spinner = ora({
@@ -99,84 +105,117 @@ export async function generateProject(config) {
 
       try {
         await downloadTemplate(repoInput, {
-          dir: projectPath,
+          dir: stagingPath,
           force: true,
-          auth: process.env.GITHUB_TOKEN // Passes token natively to giget
+          auth: process.env.GITHUB_TOKEN 
         });
-        spinner.succeed(`Files copied to ./${projectName}`);
+        spinner.succeed(`Template fetched for ./${projectName}`);
       } catch (fetchError) {
         spinner.fail(`Failed to fetch template from GitHub: ${repoInput}`);
-        
-        // SPECIFIC NETWORK & GITHUB ERROR HANDLING
-        const errStr = fetchError.toString().toLowerCase();
-        if (errStr.includes('could not resolve') || errStr.includes('econnrefused') || errStr.includes('offline') || errStr.includes('network')) {
-          console.log(chalk.red('  ✖ Error: Could not reach GitHub. Check your internet connection.'));
-          console.log(chalk.gray('  Suggested fix: Ensure you are connected to the internet and try again.'));
-        } else if (errStr.includes('404') || errStr.includes('not found')) {
-          console.log(chalk.red('  ✖ Error: The specified template or repository does not exist.'));
-          if (!config.token) {
-            console.log(chalk.yellow('  ⚠️  Hint: If this repository is private, you must provide a GitHub token using --token or set the OPUSIFY_GITHUB_TOKEN environment variable.'));
-          }
-        } else {
-          console.log(chalk.red(`  ✖ Error details: ${fetchError.message}`));
-        }
         throw new Error('FETCH_FAILED', { cause: fetchError });
       }
     }
 
-    // 3. TRANSFORM PHASE: Process Handlebars Tags
+    // 3. TRANSFORM & DEDUPLICATE PHASE
     const compileSpinner = ora({
-      text: 'Compiling template tags...',
+      text: 'Compiling templates and verifying file hashes...',
       spinner: 'dots',
       color: 'cyan'
     }).start();
     const compileStart = Date.now();
-    const allFiles = getAllFiles(projectPath);
+    
+    const allFiles = getAllFiles(stagingPath);
     let compiledCount = 0;
+    let skippedCount = 0; 
 
-    for (const file of allFiles) {
-      if (file.match(/\.(tsx|ts|json|md|html|css|mjs)$/)) {
-        let content = fs.readFileSync(file, 'utf-8');
-        if (content.includes('{{')) {
+    for (const tempFile of allFiles) {
+      const relativePath = path.relative(stagingPath, tempFile);
+      const targetFile = path.join(projectPath, relativePath);
+
+      const targetDir = path.dirname(targetFile);
+      if (!fs.existsSync(targetDir)) {
+        fs.mkdirSync(targetDir, { recursive: true });
+      }
+
+      let finalContent;
+      const isTextFile = tempFile.match(/\.(tsx|ts|json|md|html|css|mjs|js|jsx)$/);
+
+      if (isTextFile) {
+        let content = fs.readFileSync(tempFile, 'utf-8');
+
+        const hasStructuralBlocks = /\{\{\s*(#if|#unless|else|\/if|\/unless)\b/.test(content);
+
+        if (hasStructuralBlocks) {
+          const safeRegex = /\{\{(\s*)(?!(?:#if|#unless|else|\/if|\/unless|eq|projectName|template|variant|architecture|design|navCount|includeSidebar|enableSecurity)(?:\s|\}))/g;
+          content = content.replace(safeRegex, '\\{{$1');
+
           const template = Handlebars.compile(content);
-          const result = template(config);
-          fs.writeFileSync(file, result);
-          compiledCount++;
-          if (verbose) {
-            const relPath = path.relative(projectPath, file);
-            console.log(chalk.gray(`    [compile] Processed — ${relPath}`));
+          content = template(config);
+        } else {
+          const placeholders = ['projectName', 'template', 'variant', 'architecture', 'design', 'navCount', 'includeSidebar', 'enableSecurity'];
+          for (const key of placeholders) {
+            const token = `{{${key}}}`;
+            if (content.includes(token)) {
+              content = content.replaceAll(token, config[key] !== undefined ? config[key] : '');
+            }
           }
+        }
+
+        if (content.includes('\\{{')) {
+          content = content.replaceAll('\\{{', '{{');
+        }
+        
+        finalContent = content; 
+      } else {
+        finalContent = fs.readFileSync(tempFile); 
+      }
+
+      const newHash = getFileHash(finalContent);
+      let shouldWrite = true;
+
+      if (fs.existsSync(targetFile)) {
+        const existingContent = fs.readFileSync(targetFile);
+        const existingHash = getFileHash(existingContent);
+        
+        if (newHash === existingHash) {
+          shouldWrite = false;
+        }
+      }
+
+      if (shouldWrite) {
+        fs.writeFileSync(targetFile, finalContent);
+        compiledCount++;
+        if (verbose) {
+          console.log(chalk.gray(`    [write] Updated — ${relativePath}`));
+        }
+      } else {
+        skippedCount++;
+        if (verbose) {
+          console.log(chalk.gray(`    [skip] Unchanged (SHA-256 matched) — ${relativePath}`));
         }
       }
     }
-    compileSpinner.succeed('Template customization complete!');
+
+    fs.rmSync(stagingPath, { recursive: true, force: true });
+
+    compileSpinner.succeed('Template compilation & deduplication complete!');
     if (verbose) {
-      console.log(chalk.gray(`    [compile] ${compiledCount} files compiled, ${allFiles.length} total scanned (${Date.now() - compileStart}ms)`));
+      console.log(chalk.gray(`    [audit] ${compiledCount} files written, ${skippedCount} files skipped (${Date.now() - compileStart}ms)`));
     }
 
-    // 4. Save the config blueprint
     const configFilePath = path.join(projectPath, 'opusify.config.json');
     fs.writeFileSync(configFilePath, JSON.stringify(config, null, 2));
 
-    // 5. Generate dynamic navigation based on navCount
     generateNavigation(projectPath, config);
-
-    // 6. Resolve dynamic dependencies based on user choices
     resolveDependencies(projectPath, config);
-
-    // 7. Apply security hardening if enabled
     applySecurity(projectPath, config);
 
-    // 8. AUTOMATION PHASE: Install Dependencies
     if (config.noInstall) {
       console.log(chalk.gray('\n⏭️  Skipping npm install (--no-install).'));
     } else {
-      
-      // CHECK FOR EXISTING NODE_MODULES
       const nodeModulesPath = path.join(projectPath, 'node_modules');
       if (fs.existsSync(nodeModulesPath)) {
         console.log(chalk.yellow('\n⚠️  WARNING: A node_modules directory already exists in the target directory.'));
-        console.log(chalk.gray('    This can happen if you are testing locally and left it inside your template folder.'));
         console.log(chalk.gray('    Suggested fix: Delete node_modules from your template source to avoid copy bloat.'));
       }
 
@@ -199,7 +238,6 @@ export async function generateProject(config) {
       }
     }
 
-    // 7. Git Initialization
     if (config.initGit) {
       const gitSpinner = ora({
         text: 'Initializing Git repository...',
@@ -222,7 +260,6 @@ export async function generateProject(config) {
       console.log(chalk.gray('\n⏭️  Skipping Git initialization.'));
     }
 
-    // 8. Final Success Message
     console.log(chalk.magenta(`\n🎉 Project ${projectName} is ready!`));
     if (verbose) {
       console.log(chalk.gray(`    [total] Generation completed in ${((Date.now() - totalStart) / 1000).toFixed(1)}s`));
@@ -233,27 +270,18 @@ export async function generateProject(config) {
   } catch (error) {
     console.log(chalk.red('\n🚨 Generation failed.'));
     
-    // Detailed System Error Classification
-    if (error.code === 'ENOSPC') {
-      console.log(chalk.red('  ✖ Error: Not enough disk space.'));
-      console.log(chalk.gray('  Suggested fix: Free up some space on your hard drive and try again.'));
-    } else if (error.code === 'EACCES' || error.code === 'EPERM') {
-      console.log(chalk.red('  ✖ Error: Permission denied.'));
-      console.log(chalk.gray('  Suggested fix: Check your folder permissions or run your terminal as an administrator/sudo.'));
-    } else if (error.message !== 'FETCH_FAILED') {
-      // Print generic errors if it's not one we already handled above
-      console.log(chalk.gray(`  Details: ${error.message}`));
+    if (fs.existsSync(stagingPath)) {
+      try {
+        fs.rmSync(stagingPath, { recursive: true, force: true });
+      } catch(e) { /* silent fail on cleanup */ }
     }
 
-    // AUTOMATED CLEANUP
-    if (fs.existsSync(projectPath)) {
-      console.log(chalk.yellow(`\n🧹 Cleaning up partial project directory: ./${projectName}...`));
-      try {
-        fs.rmSync(projectPath, { recursive: true, force: true });
-        console.log(chalk.green('  ✔ Cleanup complete.'));
-      } catch {
-        console.log(chalk.red(`  ✖ Failed to clean up directory. You may need to delete ./${projectName} manually.`));
-      }
+    if (error.code === 'ENOSPC') {
+      console.log(chalk.red('  ✖ Error: Not enough disk space.'));
+    } else if (error.code === 'EACCES' || error.code === 'EPERM') {
+      console.log(chalk.red('  ✖ Error: Permission denied.'));
+    } else if (error.message !== 'FETCH_FAILED') {
+      console.log(chalk.gray(`  Details: ${error.message}`));
     }
   }
 }

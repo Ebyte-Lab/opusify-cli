@@ -61,7 +61,7 @@ export default function BillingPage() {
             <span className="text-foreground">67GB / 100GB</span>
           </div>
           <div className="w-full h-2 bg-bg-secondary rounded-full overflow-hidden">
-            <div className="h-full bg-primary rounded-full" style=\{{ width: '67%' }} />
+            <div className="h-full bg-primary rounded-full" style={{ width: '67%' }} />
           </div>
         </div>
       </div>

@@ -29,7 +29,7 @@ export default function DonutChart({ segments, size = 180 }: DonutChartProps) {
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <div className="relative" style=\{{ width: size, height: size }}>
+      <div className="relative" style={{ width: size, height: size }}>
         <svg
           viewBox={`0 0 ${size} ${size}`}
           className="w-full h-full -rotate-90"
@@ -73,7 +73,7 @@ export default function DonutChart({ segments, size = 180 }: DonutChartProps) {
           <div key={seg.label} className="flex items-center gap-2">
             <span
               className="w-3 h-3 rounded-full flex-shrink-0"
-              style=\{{ backgroundColor: seg.color }}
+              style={{ backgroundColor: seg.color }}
             />
             <span className="text-sm text-text-secondary truncate">{seg.label}</span>
             <span className="text-sm font-medium text-foreground ml-auto">

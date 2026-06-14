@@ -141,7 +141,7 @@ export default function AnalyticsPage() {
               <div className="flex-1">
                 <div
                   className="h-9 rounded-theme flex items-center px-3 transition-all"
-                  style=\{{ width: `${stage.percentage}%`, backgroundColor: 'var(--primary)', opacity: 0.15 + (stage.percentage / 100) * 0.85 }}
+                  style={{ width: `${stage.percentage}%`, backgroundColor: 'var(--primary)', opacity: 0.15 + (stage.percentage / 100) * 0.85 }}
                 >
                   <span className="text-xs font-medium text-foreground">{stage.count.toLocaleString()}</span>
                 </div>

@@ -115,7 +115,7 @@ export default function CoursesPage() {
               <div className="w-full h-2 bg-bg-secondary rounded-full overflow-hidden">
                 <div
                   className="h-full bg-primary rounded-full transition-all"
-                  style=\{{ width: `${course.progress}%` }}
+                  style={{ width: `${course.progress}%` }}
                 />
               </div>
             </div>

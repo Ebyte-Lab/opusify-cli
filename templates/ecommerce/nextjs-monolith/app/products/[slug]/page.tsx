@@ -41,7 +41,7 @@ export default function ProductDetailPage({
             {/* Main Image */}
             <div
               className="aspect-square rounded-theme bg-bg-secondary border border-border"
-              style=\{{ backgroundColor: '#f1f5f9' }}
+              style={{ backgroundColor: '#f1f5f9' }}
             />
             {/* Thumbnails */}
             <div className="grid grid-cols-4 gap-3 mt-3">
@@ -51,7 +51,7 @@ export default function ProductDetailPage({
                   className={`aspect-square rounded-theme border cursor-pointer transition ${
                     i === 0 ? 'border-primary ring-2 ring-primary/20' : 'border-border hover:border-primary/50'
                   }`}
-                  style=\{{ backgroundColor: i === 0 ? '#f1f5f9' : i === 1 ? '#e2e8f0' : i === 2 ? '#cbd5e1' : '#94a3b8' }}
+                  style={{ backgroundColor: i === 0 ? '#f1f5f9' : i === 1 ? '#e2e8f0' : i === 2 ? '#cbd5e1' : '#94a3b8' }}
                 />
               ))}
             </div>
@@ -100,7 +100,7 @@ export default function ProductDetailPage({
                     className={`w-8 h-8 rounded-full border-2 transition ${
                       i === 0 ? 'border-primary ring-2 ring-primary/20' : 'border-border hover:border-primary/50'
                     }`}
-                    style=\{{ backgroundColor: c.hex }}
+                    style={{ backgroundColor: c.hex }}
                     aria-label={c.name}
                   />
                 ))}
@@ -219,7 +219,7 @@ export default function ProductDetailPage({
                 <div className="relative aspect-square overflow-hidden">
                   <div
                     className="w-full h-full transition-transform duration-300 group-hover:scale-105"
-                    style=\{{ backgroundColor: product.color }}
+                    style={{ backgroundColor: product.color }}
                   />
                   <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/20 transition-all duration-300">
                     <span className="px-4 py-2 bg-white text-foreground text-sm font-medium rounded-theme opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300 shadow-lg">

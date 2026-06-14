@@ -77,7 +77,7 @@ export default function Skills() {
                     <div className="w-full h-2 bg-bg-secondary rounded-full overflow-hidden">
                       <div
                         className="h-full rounded-full transition-all duration-500"
-                        style=\{{ width: `${skill.level}%`, backgroundColor: 'var(--primary)' }}
+                        style={{ width: `${skill.level}%`, backgroundColor: 'var(--primary)' }}
                       />
                     </div>
                   </div>

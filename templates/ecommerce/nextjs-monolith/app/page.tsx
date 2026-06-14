@@ -25,7 +25,7 @@ export default function Home() {
     <div className="min-h-screen bg-background">
       {/* Hero Banner */}
       <section className="relative overflow-hidden bg-bg-secondary">
-        <div className="absolute inset-0 opacity-30" style=\{{ background: 'radial-gradient(ellipse at 70% 50%, var(--primary) 0%, transparent 60%)' }} />
+        <div className="absolute inset-0 opacity-30" style={{ background: 'radial-gradient(ellipse at 70% 50%, var(--primary) 0%, transparent 60%)' }} />
         <div className="relative max-w-7xl mx-auto px-6 py-24 lg:py-32">
           <div className="max-w-2xl">
             <span className="inline-flex px-3 py-1 text-xs font-medium rounded-full bg-primary/10 text-primary mb-6">
@@ -70,7 +70,7 @@ export default function Home() {
             >
               <div
                 className="aspect-[4/3] transition-transform duration-300 group-hover:scale-105"
-                style=\{{ backgroundColor: cat.color, opacity: 0.7 }}
+                style={{ backgroundColor: cat.color, opacity: 0.7 }}
               />
               <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/10 group-hover:bg-black/20 transition">
                 <h3 className="text-lg font-bold text-white drop-shadow-md">{cat.name}</h3>
@@ -99,7 +99,7 @@ export default function Home() {
               <div className="relative aspect-square overflow-hidden">
                 <div
                   className="w-full h-full transition-transform duration-300 group-hover:scale-105"
-                  style=\{{ backgroundColor: product.color }}
+                  style={{ backgroundColor: product.color }}
                 />
                 {product.badge && (
                   <span className={`absolute top-3 left-3 px-2.5 py-1 text-xs font-semibold rounded-theme text-white ${product.badge === 'Sale' ? 'bg-red-500' : 'bg-primary'}`}>

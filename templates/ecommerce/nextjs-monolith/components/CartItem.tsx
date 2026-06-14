@@ -15,7 +15,7 @@ export default function CartItem({ name, price, quantity, color, size, imageColo
       {/* Image */}
       <div
         className="w-20 h-20 rounded-theme flex-shrink-0"
-        style=\{{ backgroundColor: imageColor }}
+        style={{ backgroundColor: imageColor }}
       />
 
       {/* Info */}

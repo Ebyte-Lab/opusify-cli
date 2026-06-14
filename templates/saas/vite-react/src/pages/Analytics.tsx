@@ -44,7 +44,7 @@ export default function Analytics() {
               <div className="w-full h-2 bg-bg-secondary rounded-full overflow-hidden">
                 <div
                   className={`h-full rounded-full ${source.color}`}
-                  style=\{{ width: `${source.percentage * 2.5}%` }}
+                  style={{ width: `${source.percentage * 2.5}%` }}
                 />
               </div>
             </div>

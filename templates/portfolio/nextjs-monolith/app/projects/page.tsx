@@ -86,7 +86,7 @@ export default function ProjectsPage() {
               {/* Image Placeholder */}
               <div
                 className="aspect-video w-full"
-                style=\{{ backgroundColor: project.color }}
+                style={{ backgroundColor: project.color }}
               >
                 <div className="w-full h-full flex items-center justify-center">
                   <span className="text-white/70 text-sm font-medium">Project Preview</span>

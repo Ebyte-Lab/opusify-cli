@@ -23,7 +23,7 @@ export default function Cart() {
             <div className="border border-border rounded-theme bg-card p-6">
               {items.map((item, index) => (
                 <div key={index} className={`flex gap-4 py-6 ${index !== 0 ? 'border-t border-border' : ''}`}>
-                  <div className="w-24 h-24 rounded-theme flex-shrink-0" style=\{{ backgroundColor: item.imageColor }} />
+                  <div className="w-24 h-24 rounded-theme flex-shrink-0" style={{ backgroundColor: item.imageColor }} />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-4">
                       <div>
